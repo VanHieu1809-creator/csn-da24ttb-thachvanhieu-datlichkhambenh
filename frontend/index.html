@@ -427,11 +427,8 @@
         </div>
 
         <div class="hero-visual">
-          <div class="image-placeholder hero-image-placeholder">
-            <div class="placeholder-content">
-              <span class="placeholder-icon">🏥</span>
-              <span class="placeholder-text">Khung ảnh chính – Hero Banner</span>
-            </div>
+          <div class="hero-doctor-img-wrap">
+            <img class="hero-doctor-img" src="images/bìa.png" alt="Bác sĩ tư vấn cho bệnh nhân tại phòng khám Hiếu Tâm" fetchpriority="high">
           </div>
 
           <div class="floating-schedule-card">
@@ -539,19 +536,14 @@
           </div>
         </div>
 
-        <div class="home-why-section about-section">
-          <div class="about-image-col">
-            <div class="image-placeholder about-image-placeholder">
-              <div class="placeholder-content">
-                <span class="placeholder-icon">🏥</span>
-                <span class="placeholder-text">Tòa nhà Phòng khám Hiếu Tâm</span>
-              </div>
-            </div>
+        <div class="home-why-section">
+          <div class="home-why-image">
+            <img class="home-clinic-image" src="images/sanhwebkhambenh.png" alt="Sảnh tiếp đón phòng khám Hiếu Tâm" loading="lazy" decoding="async">
           </div>
-          <div class="home-why-content about-content-col">
-            <div class="section-eyebrow">GIỚI THIỆU VỀ HIẾU TÂM CLINIC</div>
-            <h2 class="home-why-title">Chất lượng chăm sóc sức khỏe, đồng hành cùng bạn mỗi ngày.</h2>
-            <p class="home-why-copy">Hiếu Tâm Clinic ra đời với sứ mệnh mang đến dịch vụ chăm sóc sức khỏe chuyên nghiệp, tận tâm và đáng tin cậy cho mọi gia đình. Với đội ngũ bác sĩ giàu kinh nghiệm, trang thiết bị hiện đại và không gian khám bệnh thoáng mát, chúng tôi cam kết đồng hành cùng bạn trong mọi giai đoạn chăm sóc sức khỏe.</p>
+          <div class="home-why-content">
+            <div class="section-eyebrow">TẠI SAO CHỌN HIẾU TÂM</div>
+            <h2 class="home-why-title">Hơn cả sự điều trị. Vì một tương lai khỏe mạnh.</h2>
+            <p class="home-why-copy">Chúng tôi luôn quan tâm đến trải nghiệm thăm khám, mang đến sự an tâm và đồng hành cùng bạn trên hành trình chăm sóc sức khỏe.</p>
             <div class="home-benefits">
               <div class="home-benefit">
                 <span class="home-benefit-icon" aria-hidden="true">
@@ -662,26 +654,21 @@
     <section class="section-padding doctors-section">
       <div class="container">
         <div class="doctors-layout">
-          <div class="doctors-image-col">
-            <div class="image-placeholder doctors-image-placeholder">
-              <div class="placeholder-content">
-                <span class="placeholder-icon">👨‍⚕️</span>
-                <span class="placeholder-text">Đội ngũ bác sĩ Hiếu Tâm</span>
-              </div>
-            </div>
-          </div>
           <div class="doctors-content-col">
-            <div class="section-eyebrow">ĐỘI NGŨ BÁC SĨ</div>
-            <h2 class="section-title">Đội ngũ y tế tận tâm, đồng hành cùng bạn.</h2>
-            <p class="section-desc">Đội ngũ bác sĩ giàu kinh nghiệm, tâm thận và chuyên môn cao, luôn sẵn sàng chăm sóc sức khỏe cho bạn và gia đình.</p>
-            <div class="doctor-filters">
-              <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="homeDoctorSearch" class="search-input" placeholder="Tìm theo tên bác sĩ...">
+            <div class="doctors-header">
+              <div class="doctors-heading">
+                <div class="section-eyebrow">ĐỘI NGŨ BÁC SĨ</div>
+                <h2 class="section-title">Bác sĩ chuyên môn cao &amp; giàu kinh nghiệm</h2>
               </div>
-              <select id="homeDoctorSpecFilter" class="filter-select">
-                <option value="">Tất cả chuyên khoa</option>
-              </select>
+              <div class="doctor-filters">
+                <div class="search-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="homeDoctorSearch" class="search-input" placeholder="Tìm theo tên bác sĩ...">
+                </div>
+                <select id="homeDoctorSpecFilter" class="filter-select">
+                  <option value="">Tất cả chuyên khoa</option>
+                </select>
+              </div>
             </div>
             <p class="doctor-results-summary home-doctor-results-summary" id="homeDoctorResultsSummary" aria-live="polite" hidden></p>
             <div class="doctors-grid-home" id="homeDoctorsGrid" role="region" aria-label="Danh sách bác sĩ"></div>
