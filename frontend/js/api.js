@@ -13,6 +13,16 @@ const SPECIALTY_PRESENTATION = {
   8: { icon: 'fa-eye', label: 'Mắt' }
 };
 
+function clearAuthSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}
+
+function logoutUser() {
+  clearAuthSession();
+  window.location.href = 'index.html';
+}
+
 function createDoctorPlaceholder(name, background, gender, variant) {
   const initials = name.split(/\s+/).slice(-2).map(part => part[0]).join('');
   const femaleHair = [
@@ -43,6 +53,16 @@ async function apiRequest(endpoint, options = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
+    const requiresAuth = endpoint.startsWith('/admin/') ||
+      endpoint.startsWith('/doctor/') ||
+      endpoint === '/auth/change-password';
+    if (requiresAuth && (response.status === 401 || response.status === 403)) {
+      clearAuthSession();
+      if (!window.location.pathname.toLowerCase().endsWith('/login.html')) {
+        window.location.href = 'login.html?reason=session';
+      }
+    }
+
     const error = new Error(data.message || data.error || 'Lỗi kết nối API');
     error.status = response.status;
     error.code = data.code;
