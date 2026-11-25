@@ -161,10 +161,7 @@ function switchAdminTab(tab, el) {
     dashboard: 'Tổng quan',
     appointments: 'Quản lý lịch hẹn',
     doctors: 'Quản lý bác sĩ',
-    specialties: 'Quản lý chuyên khoa',
-    users: 'Quản lý người dùng & bệnh nhân',
-    schedules: 'Quản lý lịch trực',
-    settings: 'Cài đặt hệ thống'
+    schedules: 'Quản lý lịch trực'
   };
   document.getElementById('adminPageTitle').textContent = titles[tab] || 'Tổng quan';
   const isAppointments = tab === 'appointments';

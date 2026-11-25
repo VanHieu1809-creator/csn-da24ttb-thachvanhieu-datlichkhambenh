@@ -32,10 +32,7 @@
         <li><a class="active" onclick="switchAdminTab('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
         <li><a onclick="switchAdminTab('appointments', this)"><i class="fa-regular fa-calendar-check"></i> Quản lý lịch hẹn</a></li>
         <li><a onclick="switchAdminTab('doctors', this)"><i class="fa-solid fa-user-doctor"></i> Quản lý bác sĩ</a></li>
-        <li><a onclick="switchAdminTab('specialties', this)"><i class="fa-solid fa-stethoscope"></i> Quản lý chuyên khoa</a></li>
-        <li><a onclick="switchAdminTab('users', this)"><i class="fa-solid fa-users"></i> Quản lý người dùng</a></li>
         <li><a onclick="switchAdminTab('schedules', this)"><i class="fa-regular fa-clock"></i> Quản lý lịch trực</a></li>
-        <li><a onclick="switchAdminTab('settings', this)"><i class="fa-solid fa-gear"></i> Cài đặt</a></li>
       </ul>
 
       <div style="border-top:1px solid var(--border-color); padding-top:12px;">
@@ -78,9 +75,7 @@
       <div class="stat-card" style="margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h3 style="font-size:15.5px; font-weight:800;">Lịch hẹn theo ngày</h3>
-          <select class="filter-select" style="width:150px; padding:6px 10px; font-size:12.5px;">
-            <option>7 ngày gần nhất</option>
-          </select>
+          <span style="font-size:12.5px; color:var(--text-secondary);">7 ngày gần nhất</span>
         </div>
         <svg viewBox="0 0 800 170" style="width:100%; height:160px;">
           <defs>
