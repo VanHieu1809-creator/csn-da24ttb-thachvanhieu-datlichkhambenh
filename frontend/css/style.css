@@ -98,19 +98,20 @@ img {
 .brand-icon {
   width: 40px;
   height: 40px;
-  background: var(--primary);
-  color: var(--white);
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
 }
 
 .brand-icon-heart {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.brand-mark {
+  display: block;
+  object-fit: contain;
 }
 
 .brand-text {
@@ -728,6 +729,10 @@ img {
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.home-specialty-icon i {
+  font-size: 24px;
 }
 
 .home-specialty-card h3 {
@@ -2081,12 +2086,13 @@ img {
 }
 
 .footer-bottom {
-  padding-top: 20px;
+  padding-top: 18px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 13px;
+  justify-content: center;
+  font-size: 13.5px;
   color: rgba(255, 255, 255, 0.72);
+  text-align: center;
   flex-wrap: wrap;
   gap: 12px;
 }

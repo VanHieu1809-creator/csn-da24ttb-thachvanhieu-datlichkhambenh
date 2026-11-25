@@ -12,29 +12,47 @@
       background: linear-gradient(90deg, #dcf1eb 0%, #eaf6f3 35%, #f2faf8 65%, #ffffff 100%) !important;
       position: relative;
       overflow: hidden;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 0;
       min-height: calc(78vh - 72px) !important;
       min-height: calc(78svh - 72px) !important;
-      padding: 32px 0 !important;
+      padding: 0 !important;
     }
 
     .hero-banner .hero-grid {
       display: grid !important;
-      grid-template-columns: 42% 58% !important;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr) !important;
       align-items: center !important;
       gap: 0 !important;
-      min-height: max(405px, calc(78vh - 136px)) !important;
-      min-height: max(405px, calc(78svh - 136px)) !important;
+      min-height: max(405px, calc(78vh - 72px)) !important;
+      min-height: max(405px, calc(78svh - 72px)) !important;
       position: relative;
       width: 100% !important;
       max-width: none !important;
-      padding: 0 0 0 max(20px, calc((100vw - 1220px) / 2 + 20px)) !important;
+      padding: 0 max(24px, calc((100vw - 1280px) / 2 + 24px)) !important;
     }
 
     .hero-content {
       padding: 32px 0 !important;
+      max-width: 720px;
       position: relative;
       z-index: 3;
+    }
+
+    .hero-highlights {
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .highlight-item {
+      flex: 0 0 auto;
+      gap: 7px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .highlight-divider {
+      flex: 0 0 1px;
     }
 
     .hero-visual {
@@ -47,45 +65,53 @@
       z-index: 1;
     }
 
+    .hero-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, rgba(234, 246, 243, 0.76) 0%, rgba(234, 246, 243, 0.62) 30%, rgba(234, 246, 243, 0.24) 52%, rgba(234, 246, 243, 0.04) 70%, transparent 100%);
+      pointer-events: none;
+    }
+
     .hero-doctor-img-wrap {
       position: absolute !important;
       top: 0 !important;
       bottom: 0 !important;
-      left: 36% !important;
+      left: 0 !important;
       right: 0 !important;
-      width: auto !important;
+      width: 100% !important;
       height: auto !important;
       margin-left: 0 !important;
       z-index: 1 !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       pointer-events: none;
     }
 
     .hero-doctor-img {
       position: absolute !important;
       top: 0 !important;
-      left: calc(50% - 60px) !important;
-      width: auto !important;
+      left: 0 !important;
+      width: 100% !important;
       max-width: none !important;
       height: 100% !important;
-      transform: translateX(-50%);
-      object-fit: contain !important;
-      object-position: center center !important;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.22) 8%, #000 24%, #000 100%);
-      mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.22) 8%, #000 24%, #000 100%);
+      object-fit: cover !important;
+      object-position: center 35% !important;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
 
     .floating-schedule-card {
       position: absolute !important;
-      right: 1% !important;
+      right: max(24px, calc((100vw - 1280px) / 2 + 24px)) !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
-      width: min(290px, 25vw) !important;
-      max-width: 320px !important;
+      width: clamp(320px, 25vw, 340px) !important;
+      max-width: 350px !important;
       height: auto;
       background: #FFFFFF !important;
       border-radius: 16px !important;
-      padding: 16px 18px 15px !important;
+      padding: 18px 20px !important;
       box-shadow: 0 10px 30px rgba(11, 70, 57, 0.08) !important;
       border: 1px solid #eaf3f0 !important;
       z-index: 5;
@@ -129,16 +155,18 @@
     /* Bố cục lịch 2 tầng: Hàng trên tên thứ, hàng dưới là ngày số */
     .mini-week-grid {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       text-align: center;
       gap: 4px;
       margin-bottom: 13px;
       padding-bottom: 13px;
       border-bottom: 1px solid #edf5f2;
+      width: 100%;
     }
 
     .mini-day {
       display: flex;
+      min-width: 0;
       flex-direction: column;
       align-items: center;
       gap: 6px;
@@ -229,6 +257,10 @@
         padding: 20px 0;
       }
 
+      .hero-visual::after {
+        display: none;
+      }
+
       .hero-doctor-img-wrap {
         position: relative !important;
         top: auto !important;
@@ -263,6 +295,14 @@
         width: min(290px, 100%) !important;
         max-width: 100% !important;
         margin: 12px 0 4px;
+      }
+
+      .hero-highlights {
+        flex-wrap: wrap;
+      }
+
+      .highlight-divider {
+        display: none;
       }
     }
 
@@ -300,7 +340,7 @@
 
       .highlight-item {
         gap: 5px;
-        font-size: 11px;
+        font-size: 13px;
       }
     }
 
@@ -331,13 +371,7 @@
     <div class="container header-inner">
       <div class="brand-logo" onclick="switchView('home')">
         <div class="brand-icon-heart">
-          <svg width="38" height="38" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 35.5C20 35.5 5 25.2 5 14.2C5 8.8 9.2 4.5 14.5 4.5C17.6 4.5 20 6.2 20 6.2C20 6.2 22.4 4.5 25.5 4.5C30.8 4.5 35 8.8 35 14.2C35 25.2 20 35.5 20 35.5Z" fill="#148868"/>
-            <circle cx="20" cy="13.5" r="2.1" fill="#FFFFFF"/>
-            <circle cx="20" cy="21.5" r="2.1" fill="#FFFFFF"/>
-            <circle cx="16" cy="17.5" r="2.1" fill="#FFFFFF"/>
-            <circle cx="24" cy="17.5" r="2.1" fill="#FFFFFF"/>
-          </svg>
+          <img class="brand-mark" src="images/hieu-tam-logo.jpg" alt="" width="44" height="54">
         </div>
         <div class="brand-text">
           <span class="brand-name">Hiếu Tâm</span>
@@ -428,7 +462,7 @@
 
         <div class="hero-visual">
           <div class="hero-doctor-img-wrap">
-            <img class="hero-doctor-img" src="images/bìa.png" alt="Bác sĩ tư vấn cho bệnh nhân tại phòng khám Hiếu Tâm" fetchpriority="high">
+            <img class="hero-doctor-img" src="images/bia.png" alt="Bác sĩ tư vấn cho bệnh nhân tại phòng khám Hiếu Tâm" fetchpriority="high">
           </div>
 
           <div class="floating-schedule-card">
@@ -471,7 +505,7 @@
           <div class="home-specialty-grid">
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M14 7v7a7 7 0 0 0 14 0V7M11 7h6m8 0h6M21 21v5a9 9 0 0 0 18 0v-3" /><circle cx="39" cy="19" r="3.5" /><circle cx="21" cy="35" r="3" /></svg>
+                <i class="fa-solid fa-notes-medical"></i>
               </div>
               <h3>Nội Tổng Quát</h3>
               <p>Chăm sóc sức khỏe toàn diện mỗi ngày.</p>
@@ -479,7 +513,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M24 40S7 30 7 17a9 9 0 0 1 17-4 9 9 0 0 1 17 4c0 13-17 23-17 23Z" /><path d="M10 24h9l4-7 5 14 4-7h6" /></svg>
+                <i class="fa-solid fa-heart-pulse"></i>
               </div>
               <h3>Tim Mạch</h3>
               <p>Đồng hành cùng trái tim khỏe mạnh.</p>
@@ -487,7 +521,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><circle cx="18" cy="10" r="4" /><path d="M17 15c-5 2-7 7-7 13v8m8-20c7 0 12 4 13 10l1 5c.5 3 3 5 6 5 2 0 3-1 3-3v-4c0-3-2-5-5-6l-4-2" /><path d="M17 17c-1 8 1 14 7 18 3 2 7 2 10 1" /><circle cx="26" cy="27" r="4" /><path d="M26 31v5m-4-3h8" /></svg>
+                <i class="fa-solid fa-person-pregnant"></i>
               </div>
               <h3>Sản Phụ Khoa</h3>
               <p>Chăm sóc sức khỏe phụ nữ toàn diện.</p>
@@ -495,7 +529,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M20 6c-3 5-4 9-2 13l3 5-3 5c-2 4-1 9 2 13m8-36c3 5 4 9 2 13l-3 5 3 5c2 4 1 9-2 13" /><path d="M18 19c4 2 8 2 12 0m-12 10c4-2 8-2 12 0" /><path d="M24 18v12" /></svg>
+                <i class="fa-solid fa-bone"></i>
               </div>
               <h3>Cơ Xương Khớp</h3>
               <p>Hỗ trợ vận động linh hoạt hơn.</p>
@@ -503,7 +537,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M24 6C20 13 12 21 12 29a12 12 0 0 0 24 0c0-8-8-16-12-23Z" /><path d="M17 31c2-6 7-10 14-11-1 7-5 12-12 14" /><path d="M35 10v10m-5-5h10" /></svg>
+                <i class="fa-solid fa-hand-dots"></i>
               </div>
               <h3>Da Liễu</h3>
               <p>Chăm sóc làn da khỏe đẹp.</p>
@@ -511,7 +545,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M13 21a11 11 0 0 1 22 0v8a11 11 0 0 1-22 0v-8Z" /><path d="M13 24H9a4 4 0 0 0 0 8h4m22-8h4a4 4 0 0 1 0 8h-4" /><path d="M19 26h.01m10 0h.01m-9 7c2 2 6 2 8 0" /><path d="M19 15c1-4 5-6 9-5" /></svg>
+                <i class="fa-solid fa-baby"></i>
               </div>
               <h3>Nhi Khoa</h3>
               <p>Chăm sóc trẻ yêu vững vàng lớn khôn.</p>
@@ -519,7 +553,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M25 40V8c0-2 3-3 5-2 3 2 3 6 1 9l-3 4v5c0 3 2 5 4 7 2 2 3 5 2 8" /><path d="M25 14c-6-2-10 1-10 7v6c0 7 4 11 10 13" /><path d="M25 20c-4 0-6 3-6 6 0 2 1 4 3 5" /></svg>
+                <i class="fa-solid fa-ear-listen"></i>
               </div>
               <h3>Tai Mũi Họng</h3>
               <p>Chăm sóc tai mũi họng cho mọi lứa tuổi.</p>
@@ -527,7 +561,7 @@
             </article>
             <article class="home-specialty-card">
               <div class="home-specialty-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none"><path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24Z" /><circle cx="24" cy="24" r="8" /><circle cx="24" cy="24" r="3" /></svg>
+                <i class="fa-solid fa-eye"></i>
               </div>
               <h3>Mắt</h3>
               <p>Chăm sóc đôi mắt sáng khỏe.</p>
@@ -538,7 +572,7 @@
 
         <div class="home-why-section">
           <div class="home-why-image">
-            <img class="home-clinic-image" src="images/sanhwebkhambenh.png" alt="Sảnh tiếp đón phòng khám Hiếu Tâm" loading="lazy" decoding="async">
+            <img class="home-clinic-image" src="images/sanh-don-tiep.png" alt="Sảnh tiếp đón phòng khám Hiếu Tâm" loading="lazy" decoding="async">
           </div>
           <div class="home-why-content">
             <div class="section-eyebrow">TẠI SAO CHỌN HIẾU TÂM</div>
@@ -916,13 +950,7 @@
         <div>
           <div class="brand-logo" style="margin-bottom:12px;">
             <div class="brand-icon-heart">
-              <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 35.5C20 35.5 5 25.2 5 14.2C5 8.8 9.2 4.5 14.5 4.5C17.6 4.5 20 6.2 20 6.2C20 6.2 22.4 4.5 25.5 4.5C30.8 4.5 35 8.8 35 14.2C35 25.2 20 35.5 20 35.5Z" fill="#FFFFFF"/>
-                <circle cx="20" cy="13.5" r="2.1" fill="#148868"/>
-                <circle cx="20" cy="21.5" r="2.1" fill="#148868"/>
-                <circle cx="16" cy="17.5" r="2.1" fill="#148868"/>
-                <circle cx="24" cy="17.5" r="2.1" fill="#148868"/>
-              </svg>
+              <img class="brand-mark" src="images/hieu-tam-logo.jpg" alt="" width="40" height="49">
             </div>
             <div class="brand-text">
               <span class="brand-name" style="color:#fff;">Hiếu Tâm</span>
@@ -960,8 +988,7 @@
       </div>
 
       <div class="footer-bottom">
-        <div>© 2026 Phòng khám Đa khoa Hiếu Tâm. All rights reserved.</div>
-        <div>Chính sách bảo mật &nbsp;|&nbsp; Điều khoản sử dụng</div>
+        <div>© 2026 Phòng khám Đa khoa Hiếu Tâm.</div>
       </div>
     </div>
   </footer>
