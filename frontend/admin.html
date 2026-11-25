@@ -223,6 +223,48 @@
           </div>
         </div>
       </section>
+
+      <section id="adminSchedulesPanel" class="admin-schedules-panel" hidden>
+        <div class="stat-card">
+          <div class="admin-appointments-heading">
+            <div>
+              <h2>Ca trực theo ngày</h2>
+              <p>Ca được thêm cho một ngày sẽ thay thế lịch tuần mặc định của bác sĩ trong ngày đó. Phòng khám nghỉ Chủ nhật.</p>
+            </div>
+          </div>
+          <div class="admin-schedule-filters">
+            <label class="admin-schedule-doctor-filter" for="adminScheduleDoctorFilter">Bác sĩ
+              <select id="adminScheduleDoctorFilter" class="form-control" disabled>
+                <option value="all">Đang tải bác sĩ...</option>
+              </select>
+            </label>
+            <div class="admin-schedule-week-controls" aria-label="Chọn tuần">
+              <button type="button" class="btn btn-light-outline" id="adminSchedulePreviousWeek">Tuần trước</button>
+              <strong id="adminScheduleWeekLabel" class="admin-schedule-week-label"></strong>
+              <button type="button" class="btn btn-light-outline" id="adminScheduleNextWeek">Tuần sau</button>
+              <button type="button" class="btn btn-light-outline" id="adminScheduleCurrentWeek">Tuần này</button>
+            </div>
+          </div>
+          <p id="adminScheduleDoctorsStatus" class="booking-inline-status" role="status" aria-live="polite"></p>
+          <p id="adminSchedulesStatus" class="booking-inline-status" role="status" aria-live="polite"></p>
+          <div class="admin-schedules-table-wrap">
+            <table class="data-table admin-schedules-table">
+              <thead>
+                <tr>
+                  <th>Ngày</th>
+                  <th>Thứ</th>
+                  <th>Bác sĩ</th>
+                  <th>Chuyên khoa</th>
+                  <th>Giờ bắt đầu – kết thúc</th>
+                  <th>Thời lượng mỗi khung giờ (phút)</th>
+                  <th>Lịch hẹn đang gắn</th>
+                </tr>
+              </thead>
+              <tbody id="adminSchedulesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 

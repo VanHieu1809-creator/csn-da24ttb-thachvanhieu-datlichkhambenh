@@ -2191,6 +2191,10 @@ img {
   display: none;
 }
 
+.admin-schedules-panel[hidden] {
+  display: none;
+}
+
 .admin-doctor-form h3 {
   color: var(--primary-dark);
   font-size: 15px;
@@ -2234,6 +2238,46 @@ img {
 
 .admin-doctors-table {
   min-width: 760px;
+}
+
+.admin-schedule-filters {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.admin-schedule-doctor-filter {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-schedule-week-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-schedule-week-label {
+  min-width: 190px;
+  color: var(--primary-dark);
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin-schedules-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-schedules-table {
+  min-width: 980px;
 }
 
 .admin-doctor-status-action {
@@ -2315,6 +2359,19 @@ img {
 
   .admin-appointments-table {
     min-width: 920px;
+  }
+
+  .admin-schedule-doctor-filter {
+    flex: 1 1 190px;
+    min-width: 0;
+  }
+
+  .admin-schedule-week-controls {
+    align-items: stretch;
+  }
+
+  .admin-schedule-week-label {
+    flex: 1 1 190px;
   }
 
   .admin-appointment-actions {
