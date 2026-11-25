@@ -11,6 +11,41 @@ const {
 } = require('../services/appointmentHoldService');
 const { getScheduleIntervals, loadScheduleContext } = require('../services/doctorScheduleService');
 
+function normalizeShiftTime(value) {
+    const time = String(value || '');
+    const normalized = time.length === 5 ? `${time}:00` : time;
+    return /^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(normalized) ? normalized : null;
+}
+
+function getShiftHoursError(shiftDate, startTime, endTime) {
+    const dateValue = String(shiftDate || '');
+    const date = new Date(`${dateValue}T00:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue) ||
+        Number.isNaN(date.getTime()) ||
+        date.toISOString().slice(0, 10) !== dateValue) {
+        return 'Ngày trực không hợp lệ.';
+    }
+
+    const weekday = date.getUTCDay();
+    if (weekday === 0) {
+        return 'Phòng khám nghỉ Chủ nhật, không thể tạo hoặc sửa ca trực.';
+    }
+    if (!startTime || !endTime) {
+        return 'Giờ bắt đầu hoặc giờ kết thúc không hợp lệ.';
+    }
+    if (startTime < '08:00:00') {
+        return 'Giờ bắt đầu không được trước 08:00.';
+    }
+
+    const latestEndTime = weekday === 6 ? '11:30:00' : '17:00:00';
+    if (endTime > latestEndTime) {
+        return weekday === 6
+            ? 'Thứ 7, giờ kết thúc không được sau 11:30.'
+            : 'Giờ kết thúc không được sau 17:00.';
+    }
+    return '';
+}
+
 async function getDashboardStats(req, res) {
     try {
         const [[pat]] = await pool.execute('SELECT COUNT(*) AS total FROM patients');
@@ -262,8 +297,12 @@ const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
             return res.status(400).json({ success: false, message: 'Không thể tạo ca trực trong quá khứ.' });
         }
 
-        const sTime = start_time.length === 5 ? `${start_time}:00` : start_time;
-        const eTime = end_time.length === 5 ? `${end_time}:00` : end_time;
+        const sTime = normalizeShiftTime(start_time);
+        const eTime = normalizeShiftTime(end_time);
+        const scheduleError = getShiftHoursError(shift_date, sTime, eTime);
+        if (scheduleError) {
+            return res.status(400).json({ success: false, message: scheduleError });
+        }
 
         if (eTime <= sTime) {
             return res.status(400).json({ success: false, message: 'Giờ kết thúc phải lớn hơn giờ bắt đầu.' });
@@ -307,6 +346,13 @@ const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
             return res.status(400).json({ success: false, message: 'Không thể đặt ca trực trong quá khứ.' });
         }
 
+        const sTime = normalizeShiftTime(start_time);
+        const eTime = normalizeShiftTime(end_time);
+        const scheduleError = getShiftHoursError(shift_date, sTime, eTime);
+        if (scheduleError) {
+            return res.status(400).json({ success: false, message: scheduleError });
+        }
+
         const [bookings] = await pool.execute(
             `SELECT COUNT(*) AS cnt FROM appointments WHERE shift_id = ? AND status IN ('pending', 'confirmed', 'completed')`,
             [shiftId]
@@ -317,9 +363,6 @@ const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
                 message: 'Không thể sửa giờ ca trực này vì đã có bệnh nhân đặt lịch trong ca.'
             });
         }
-
-        const sTime = start_time.length === 5 ? `${start_time}:00` : start_time;
-        const eTime = end_time.length === 5 ? `${end_time}:00` : end_time;
 
         if (eTime <= sTime) {
             return res.status(400).json({ success: false, message: 'Giờ kết thúc phải lớn hơn giờ bắt đầu.' });
