@@ -45,7 +45,7 @@
     <main class="admin-main">
       <div style="margin-bottom:20px;">
         <h1 style="font-size:24px; font-weight:800; color:var(--primary-dark);" id="adminPageTitle">Tổng quan</h1>
-        <p style="font-size:13px; color:var(--text-secondary);">Thống kê hoạt động trong hệ thống</p>
+        <p id="adminPageDescription" style="font-size:13px; color:var(--text-secondary);">Thống kê hoạt động trong hệ thống</p>
       </div>
 
       <div id="adminDashboardContent">
@@ -116,6 +116,70 @@
         </div>
       </div>
       </div>
+
+      <section id="adminDoctorsPanel" class="admin-doctors-panel" hidden>
+        <div class="stat-card">
+          <div class="admin-appointments-heading">
+            <div>
+              <h2>Danh sách bác sĩ</h2>
+              <p>Quản lý thông tin và trạng thái hoạt động của bác sĩ.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="adminDoctorAddButton">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i> Thêm bác sĩ
+            </button>
+          </div>
+
+          <form id="adminDoctorForm" class="admin-doctor-form" hidden>
+            <h3>Thông tin bác sĩ mới</h3>
+            <div class="admin-doctor-form-grid">
+              <label>Họ và tên
+                <input class="form-control" name="full_name" type="text" autocomplete="name" required>
+              </label>
+              <label>Email
+                <input class="form-control" name="email" type="email" autocomplete="email" required>
+              </label>
+              <label>Mật khẩu
+                <input class="form-control" name="password" type="password" autocomplete="new-password" required>
+              </label>
+              <label>Chuyên khoa
+                <select class="form-control" name="specialty_id" id="adminDoctorSpecialty" required>
+                  <option value="">Đang tải chuyên khoa...</option>
+                </select>
+                <span id="adminDoctorSpecialtyStatus" class="admin-doctor-form-status" role="status" aria-live="polite"></span>
+              </label>
+              <label>Số điện thoại
+                <input class="form-control" name="phone" type="tel" autocomplete="tel" required>
+              </label>
+              <label>Số phòng
+                <input class="form-control" name="room_number" type="text" required>
+              </label>
+            </div>
+            <p id="adminDoctorFormError" class="admin-doctor-form-error" role="alert" hidden></p>
+            <div class="admin-doctor-form-actions">
+              <button type="button" class="btn btn-light-outline" id="adminDoctorCancelButton">Hủy</button>
+              <button type="submit" class="btn btn-primary" id="adminDoctorSubmitButton">Tạo bác sĩ</button>
+            </div>
+          </form>
+
+          <p id="adminDoctorsNotice" class="booking-inline-status" role="status" aria-live="polite"></p>
+          <p id="adminDoctorsStatus" class="booking-inline-status" role="status" aria-live="polite"></p>
+          <div class="admin-doctors-table-wrap">
+            <table class="data-table admin-doctors-table">
+              <thead>
+                <tr>
+                  <th>Họ tên</th>
+                  <th>Chuyên khoa</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="adminDoctorsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       <section id="adminAppointmentsPanel" class="admin-appointments-panel" hidden>
         <div class="stat-card">

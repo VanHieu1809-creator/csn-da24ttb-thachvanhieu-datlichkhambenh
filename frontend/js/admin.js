@@ -154,6 +154,139 @@ async function reviewAdminAppointment(id, action) {
   }
 }
 
+async function loadAdminDoctors() {
+  const tbody = document.getElementById('adminDoctorsBody');
+  const status = document.getElementById('adminDoctorsStatus');
+  if (!tbody || !status) return;
+
+  status.setAttribute('role', 'status');
+  status.textContent = 'Đang tải danh sách bác sĩ...';
+  tbody.innerHTML = '';
+  try {
+    const response = await apiRequest('/admin/doctors');
+    if (!Array.isArray(response.data)) throw new Error('Dữ liệu danh sách bác sĩ không hợp lệ.');
+    const doctors = response.data;
+    if (!doctors.length) {
+      status.textContent = '';
+      tbody.innerHTML = '<tr><td colspan="6">Chưa có bác sĩ</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = doctors.map(doctor => {
+      const active = Number(doctor.is_active) === 1 && Number(doctor.user_active) !== 0;
+      return `
+        <tr>
+          <td>${escapeAdminMarkup(doctor.display_name || doctor.full_name)}</td>
+          <td>${escapeAdminMarkup(doctor.specialty_name)}</td>
+          <td>${escapeAdminMarkup(doctor.email)}</td>
+          <td>${escapeAdminMarkup(doctor.phone || '—')}</td>
+          <td><span class="status-badge ${active ? 'badge-confirmed' : 'badge-cancelled'}">${active ? 'Hoạt động' : 'Tạm ngưng'}</span></td>
+          <td>
+            <button type="button" class="btn ${active ? 'btn-light-outline' : 'btn-primary'} admin-doctor-status-action"
+              data-id="${escapeAdminMarkup(doctor.id)}" data-active="${active ? '1' : '0'}">
+              ${active ? 'Tạm ngưng' : 'Kích hoạt'}
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    status.textContent = `Có ${doctors.length} bác sĩ.`;
+  } catch (error) {
+    status.setAttribute('role', 'alert');
+    status.innerHTML = `${escapeAdminMarkup(error.message || 'Không thể tải danh sách bác sĩ.')} <button type="button" class="booking-retry" id="adminDoctorsRetry">Thử lại</button>`;
+    console.error('Không thể tải danh sách bác sĩ quản trị:', error.message);
+  }
+}
+
+async function loadAdminDoctorSpecialties() {
+  const select = document.getElementById('adminDoctorSpecialty');
+  const status = document.getElementById('adminDoctorSpecialtyStatus');
+  const submitButton = document.getElementById('adminDoctorSubmitButton');
+  if (!select || !status || !submitButton) return;
+
+  select.disabled = true;
+  submitButton.disabled = true;
+  select.innerHTML = '<option value="">Đang tải chuyên khoa...</option>';
+  status.setAttribute('role', 'status');
+  status.textContent = '';
+  try {
+    const response = await apiRequest('/admin/specialties');
+    if (!Array.isArray(response.data)) throw new Error('Dữ liệu chuyên khoa không hợp lệ.');
+    const specialties = response.data;
+    select.innerHTML = '<option value="">Chọn chuyên khoa</option>' + specialties.map(specialty =>
+      `<option value="${escapeAdminMarkup(specialty.id)}">${escapeAdminMarkup(specialty.name)}</option>`
+    ).join('');
+    select.disabled = specialties.length === 0;
+    submitButton.disabled = specialties.length === 0;
+    if (!specialties.length) status.textContent = 'Chưa có chuyên khoa để lựa chọn.';
+  } catch (error) {
+    select.innerHTML = '<option value="">Không thể tải chuyên khoa</option>';
+    status.setAttribute('role', 'alert');
+    status.innerHTML = `${escapeAdminMarkup(error.message || 'Không thể tải chuyên khoa.')} <button type="button" class="booking-retry" id="adminDoctorSpecialtiesRetry">Thử lại</button>`;
+    console.error('Không thể tải danh sách chuyên khoa quản trị:', error.message);
+  }
+}
+
+async function toggleAdminDoctorStatus(button) {
+  const id = button.dataset.id;
+  const isActive = button.dataset.active === '1';
+  if (isActive && !window.confirm('Bạn có chắc muốn tạm ngưng bác sĩ này?')) return;
+
+  button.disabled = true;
+  const notice = document.getElementById('adminDoctorsNotice');
+  notice.setAttribute('role', 'status');
+  notice.textContent = isActive ? 'Đang tạm ngưng bác sĩ...' : 'Đang kích hoạt bác sĩ...';
+  try {
+    const response = await apiRequest(`/admin/doctors/${encodeURIComponent(id)}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_active: isActive ? 0 : 1 })
+    });
+    await loadAdminDoctors();
+    notice.textContent = response.message || 'Đã cập nhật trạng thái bác sĩ.';
+  } catch (error) {
+    notice.setAttribute('role', 'alert');
+    notice.textContent = error.message || 'Không thể cập nhật trạng thái bác sĩ.';
+    console.error('Không thể cập nhật trạng thái bác sĩ:', error.message);
+  }
+}
+
+async function createAdminDoctor(event) {
+  event.preventDefault();
+  const form = document.getElementById('adminDoctorForm');
+  const errorMessage = document.getElementById('adminDoctorFormError');
+  const submitButton = document.getElementById('adminDoctorSubmitButton');
+  const notice = document.getElementById('adminDoctorsNotice');
+  const formData = new FormData(form);
+  const payload = {
+    full_name: formData.get('full_name').trim(),
+    email: formData.get('email').trim(),
+    password: formData.get('password'),
+    specialty_id: formData.get('specialty_id'),
+    phone: formData.get('phone').trim(),
+    room_number: formData.get('room_number').trim()
+  };
+
+  errorMessage.hidden = true;
+  errorMessage.textContent = '';
+  submitButton.disabled = true;
+  try {
+    const response = await apiRequest('/admin/doctors', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    form.reset();
+    form.hidden = true;
+    notice.setAttribute('role', 'status');
+    notice.textContent = response.message || 'Thêm bác sĩ thành công.';
+    await loadAdminDoctors();
+  } catch (error) {
+    errorMessage.textContent = error.message || 'Không thể tạo bác sĩ.';
+    errorMessage.hidden = false;
+  } finally {
+    submitButton.disabled = false;
+  }
+}
+
 function switchAdminTab(tab, el) {
   document.querySelectorAll('.admin-sidebar .sidebar-menu a').forEach(link => link.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -163,11 +296,21 @@ function switchAdminTab(tab, el) {
     doctors: 'Quản lý bác sĩ',
     schedules: 'Quản lý lịch trực'
   };
+  const descriptions = {
+    dashboard: 'Thống kê hoạt động trong hệ thống',
+    appointments: 'Theo dõi và xử lý các yêu cầu đặt lịch.',
+    doctors: 'Quản lý thông tin và trạng thái hoạt động của bác sĩ.',
+    schedules: 'Thống kê hoạt động trong hệ thống'
+  };
   document.getElementById('adminPageTitle').textContent = titles[tab] || 'Tổng quan';
+  document.getElementById('adminPageDescription').textContent = descriptions[tab] || descriptions.dashboard;
   const isAppointments = tab === 'appointments';
-  document.getElementById('adminDashboardContent').hidden = isAppointments;
+  const isDoctors = tab === 'doctors';
+  document.getElementById('adminDashboardContent').hidden = isAppointments || isDoctors;
   document.getElementById('adminAppointmentsPanel').hidden = !isAppointments;
+  document.getElementById('adminDoctorsPanel').hidden = !isDoctors;
   if (isAppointments) loadAdminAppointments();
+  if (isDoctors) loadAdminDoctors();
 }
 
 function initAdminDashboard() {
@@ -181,6 +324,33 @@ function initAdminDashboard() {
   document.getElementById('adminAppointmentsManagerBody')?.addEventListener('click', event => {
     const button = event.target.closest('.admin-appointment-action');
     if (button) reviewAdminAppointment(button.dataset.id, button.dataset.action);
+  });
+  document.getElementById('adminDoctorAddButton')?.addEventListener('click', () => {
+    const form = document.getElementById('adminDoctorForm');
+    const errorMessage = document.getElementById('adminDoctorFormError');
+    form.hidden = false;
+    errorMessage.hidden = true;
+    errorMessage.textContent = '';
+    document.getElementById('adminDoctorsNotice').textContent = '';
+    loadAdminDoctorSpecialties();
+    form.elements.full_name.focus();
+  });
+  document.getElementById('adminDoctorCancelButton')?.addEventListener('click', () => {
+    const form = document.getElementById('adminDoctorForm');
+    form.reset();
+    form.hidden = true;
+    document.getElementById('adminDoctorFormError').hidden = true;
+  });
+  document.getElementById('adminDoctorForm')?.addEventListener('submit', createAdminDoctor);
+  document.getElementById('adminDoctorsBody')?.addEventListener('click', event => {
+    const button = event.target.closest('.admin-doctor-status-action');
+    if (button) toggleAdminDoctorStatus(button);
+  });
+  document.getElementById('adminDoctorsStatus')?.addEventListener('click', event => {
+    if (event.target.id === 'adminDoctorsRetry') loadAdminDoctors();
+  });
+  document.getElementById('adminDoctorSpecialtyStatus')?.addEventListener('click', event => {
+    if (event.target.id === 'adminDoctorSpecialtiesRetry') loadAdminDoctorSpecialties();
   });
   window.setInterval(() => {
     if (!document.getElementById('adminAppointmentsPanel')?.hidden) loadAdminAppointments();
