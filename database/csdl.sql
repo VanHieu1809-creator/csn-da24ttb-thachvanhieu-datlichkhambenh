@@ -201,13 +201,13 @@ INSERT INTO users (id, email, password_hash, full_name, role, is_active) VALUES
 (9, 'bs.ngocmai@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Nguyễn Ngọc Mai', 'doctor', 1);
 
 INSERT INTO specialties (id, name, code, description, icon_name, is_active) VALUES
-(1, 'Nội Tổng Quát', 'NOI-TQ', 'Khám, chẩn đoán và điều trị các bệnh lý nội khoa tổng quát, tim mạch, hô hấp, tiêu hóa...', 'STETHOSCOPE', 1),
-(2, 'Tim Mạch', 'TIM-MACH', 'Chẩn đoán chuyên sâu bệnh lý tim mạch, huyết áp, rối loạn nhịp tim, suy tim...', 'HEART', 1),
-(3, 'Nhi Khoa', 'NHI-KHOA', 'Tư vấn dinh dưỡng, khám bệnh lý và điều trị các bệnh lý ở trẻ em từ sơ sinh đến tuổi dậy thì.', 'BABY', 1),
-(4, 'Tai Mũi Họng', 'TMH', 'Khám và điều trị các bệnh lý về tai, mũi, họng, viêm tai giữa, viêm xoang...', 'EAR', 1),
-(5, 'Da Liễu', 'DA-LIEU', 'Khám và điều trị các bệnh lý về da, mụn, nám, chàm, vảy nến, dị ứng...', 'SHIELD', 1),
-(6, 'Sản Phụ Khoa', 'SAN-PK', 'Chăm sóc sức khỏe sinh sản, thai kỳ, kế hoạch hóa gia đình.', 'BABY', 1),
-(7, 'Cơ Xương Khớp', 'CXK', 'Khám và điều trị các bệnh lý cơ xương khớp.', 'BONE', 1),
+(1, 'Nội tổng quát', 'NOI-TQ', 'Khám, chẩn đoán và điều trị các bệnh lý nội khoa tổng quát, tim mạch, hô hấp, tiêu hóa...', 'STETHOSCOPE', 1),
+(2, 'Tim mạch', 'TIM-MACH', 'Chẩn đoán chuyên sâu bệnh lý tim mạch, huyết áp, rối loạn nhịp tim, suy tim...', 'HEART', 1),
+(6, 'Sản phụ khoa', 'SAN-PK', 'Chăm sóc sức khỏe sinh sản, thai kỳ, kế hoạch hóa gia đình.', 'BABY', 1),
+(7, 'Cơ xương khớp', 'CXK', 'Khám và điều trị các bệnh lý cơ xương khớp.', 'BONE', 1),
+(5, 'Da liễu', 'DA-LIEU', 'Khám và điều trị các bệnh lý về da, mụn, nám, chàm, vảy nến, dị ứng...', 'SHIELD', 1),
+(3, 'Nhi khoa', 'NHI-KHOA', 'Tư vấn dinh dưỡng, khám bệnh lý và điều trị các bệnh lý ở trẻ em từ sơ sinh đến tuổi dậy thì.', 'BABY', 1),
+(4, 'Tai mũi họng', 'TMH', 'Khám và điều trị các bệnh lý về tai, mũi, họng, viêm tai giữa, viêm xoang...', 'EAR', 1),
 (8, 'Mắt', 'MAT', 'Khám và điều trị các bệnh lý về mắt.', 'EYE', 1);
 
 INSERT INTO doctors (id, user_id, specialty_id, degree, phone, bio, room_number, experience_years, is_active) VALUES
@@ -225,6 +225,7 @@ INSERT INTO doctors (id, user_id, specialty_id, degree, phone, bio, room_number,
 INSERT INTO doctor_weekly_schedules (doctor_id, weekday, start_time, end_time, slot_duration, is_demo)
 SELECT d.id, weekday_values.weekday, time_values.start_time, time_values.end_time, 30, 1
 FROM doctors d
+JOIN users u ON u.id = d.user_id
 CROSS JOIN (
     SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2
     UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
@@ -233,7 +234,20 @@ CROSS JOIN (
     SELECT '08:00:00' AS start_time, '11:30:00' AS end_time
     UNION ALL SELECT '13:30:00', '17:00:00'
 ) AS time_values
-WHERE d.id BETWEEN 1 AND 8
+WHERE u.full_name IN (
+    'Nguyễn Minh Triết', 'Lê Thanh Hà', 'Vũ Phương Thảo', 'Trần Hoàng Nam',
+    'Đặng Quốc Huy', 'Phạm Thùy Linh', 'Hoàng Minh Tuấn', 'Nguyễn Ngọc Mai'
+)
+  AND (
+      (u.full_name = 'Nguyễn Minh Triết' AND d.specialty_id = 1)
+      OR (u.full_name = 'Lê Thanh Hà' AND d.specialty_id = 2)
+      OR (u.full_name = 'Vũ Phương Thảo' AND d.specialty_id = 6)
+      OR (u.full_name = 'Trần Hoàng Nam' AND d.specialty_id = 5)
+      OR (u.full_name = 'Đặng Quốc Huy' AND d.specialty_id = 4)
+      OR (u.full_name = 'Phạm Thùy Linh' AND d.specialty_id = 3)
+      OR (u.full_name = 'Hoàng Minh Tuấn' AND d.specialty_id = 7)
+      OR (u.full_name = 'Nguyễn Ngọc Mai' AND d.specialty_id = 8)
+  )
   AND (weekday_values.weekday < 5 OR time_values.start_time = '08:00:00');
 
 INSERT INTO doctor_shifts (doctor_id, shift_date, start_time, end_time, slot_duration, status) VALUES
@@ -255,6 +269,17 @@ INSERT INTO doctor_shifts (doctor_id, shift_date, start_time, end_time, slot_dur
 (7, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '08:00:00', '11:30:00', 30, 'active'),
 (8, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '08:00:00', '11:30:00', 30, 'active');
 
+UPDATE doctor_shifts shift
+JOIN doctor_weekly_schedules schedule
+    ON schedule.doctor_id = shift.doctor_id
+   AND schedule.weekday = WEEKDAY(shift.shift_date)
+   AND schedule.start_time = shift.start_time
+   AND schedule.end_time = shift.end_time
+   AND schedule.slot_duration = shift.slot_duration
+   AND schedule.is_demo = 1
+   AND shift.created_at >= schedule.created_at
+SET shift.is_demo = 1;
+
 INSERT INTO patients (id, full_name, phone, email, date_of_birth, gender, address) VALUES
 (1, 'Nguyễn Văn A', '0912345678', 'nguyenvana@example.com', '1992-05-14', 'Nam', 'TP. Trà Vinh');
 
@@ -265,13 +290,7 @@ INSERT INTO appointments (
     reason, status, doctor_notes
 ) VALUES
 ('HT-20261029-001', 1, 1, 1, 1, CURDATE(), '08:00:00', '08:30:00', 'Nguyễn Văn A', '0912345678', 'nguyenvana@example.com', '1992-05-14', 'Nam', 'Khám tổng quát định kỳ và kiểm tra huyết áp.', 'confirmed', 'Bệnh nhân có tiền sử huyết áp cao nhẹ.');
--- 7. Bảng contact_messages: Luu biểu mẫu liên hệ từ bệnh nhân/khách
-CREATE TABLE IF NOT EXISTS contact_messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    email VARCHAR(120) NULL,
-    subject VARCHAR(150) NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+
+UPDATE appointments
+SET hold_expires_at = DATE_ADD(created_at, INTERVAL 60 MINUTE)
+WHERE status = 'pending' AND hold_expires_at IS NULL;
