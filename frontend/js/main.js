@@ -279,12 +279,25 @@ function createStableDoctorAvatar(doctor) {
     ? ((doctorId - 1) % DOCTOR_AVATAR_BACKGROUNDS.length) + 1
     : 1;
   const gender = variant % 2 === 0 ? 'female' : 'male';
-  return createDoctorPlaceholder(
+  const avatar = createDoctorPlaceholder(
     String(doctor.name || ''),
     DOCTOR_AVATAR_BACKGROUNDS[variant - 1],
     gender,
     variant
   );
+  if (gender !== 'female') return avatar;
+
+  const svg = decodeURIComponent(avatar.slice('data:image/svg+xml,'.length));
+  const face = '<circle cx="320" cy="170" r="82" fill="#f1c8ad"/>';
+  const hair = svg.match(/<path d="[^"]+" fill="#263c3a"\/>/)?.[0];
+  if (!hair || !svg.includes(face)) {
+    console.error('Không thể sắp xếp các lớp SVG cho avatar bác sĩ nữ.');
+    return avatar;
+  }
+
+  const layeredSvg = svg.replace(`${face}${hair}`, `${hair}${face}`);
+  const bangs = '<path d="M239 157c8-49 39-82 81-82s74 33 81 82c-23-21-48-31-78-31-32 0-58 10-84 31Z" fill="#263c3a"/>';
+  return `data:image/svg+xml,${encodeURIComponent(layeredSvg.replace('</svg>', `${bangs}</svg>`))}`;
 }
 
 async function initializeDoctors() {
