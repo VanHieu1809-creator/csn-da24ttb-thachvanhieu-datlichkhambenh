@@ -1278,6 +1278,10 @@ img {
   gap: 20px;
 }
 
+.booking-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .booking-main-card,
 .lookup-card {
   background: var(--white);
@@ -1446,60 +1450,6 @@ img {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-
-.booking-support-card {
-  background: var(--mint-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 22px;
-  display: grid;
-  place-items: center;
-  min-width: 0;
-}
-
-.booking-support-content {
-  display: grid;
-  gap: 9px;
-  width: min(100%, 290px);
-}
-
-.booking-support-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--primary);
-  font-weight: 700;
-}
-
-.booking-support-content h4 {
-  color: var(--primary-dark);
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.booking-support-content p {
-  color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.booking-support-content .booking-support-eyebrow {
-  margin-bottom: -7px;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.booking-support-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  margin-top: 3px;
-  background: var(--white);
-  color: var(--primary);
-  font-weight: 700;
 }
 
 .booking-date-layout,
@@ -2033,7 +1983,7 @@ img {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1.3fr 1fr 0.9fr;
+  grid-template-columns: 1.3fr 1.3fr 1fr;
   gap: 28px;
   padding-bottom: 32px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
@@ -2062,27 +2012,6 @@ img {
 .footer-list i {
   color: #5cd6b3;
   margin-top: 4px;
-}
-
-.social-links {
-  display: flex;
-  gap: 10px;
-}
-
-.social-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.social-btn:hover {
-  background: var(--primary);
 }
 
 .footer-bottom {
@@ -2191,7 +2120,8 @@ img {
   display: none;
 }
 
-.admin-schedules-panel[hidden] {
+.admin-schedules-panel[hidden],
+.admin-appointments-panel[hidden] {
   display: none;
 }
 
@@ -2249,6 +2179,10 @@ img {
   margin: 18px 0;
 }
 
+.admin-schedule-list-filters {
+  justify-content: flex-start;
+}
+
 .admin-schedule-doctor-filter {
   display: grid;
   gap: 6px;
@@ -2258,18 +2192,29 @@ img {
   font-weight: 700;
 }
 
-.admin-schedule-week-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+.admin-schedule-date-filter {
+  display: grid;
+  gap: 6px;
+  min-width: 160px;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.admin-schedule-week-label {
-  min-width: 190px;
+.admin-schedule-form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-schedule-success {
   color: var(--primary-dark);
-  font-size: 13px;
-  text-align: center;
+}
+
+.admin-schedule-error {
+  color: #b91c1c;
+}
+
+.admin-shift-delete {
+  white-space: nowrap;
 }
 
 .admin-schedules-table-wrap {
@@ -2277,7 +2222,7 @@ img {
 }
 
 .admin-schedules-table {
-  min-width: 980px;
+  min-width: 920px;
 }
 
 .admin-doctor-status-action {
@@ -2362,16 +2307,17 @@ img {
   }
 
   .admin-schedule-doctor-filter {
-    flex: 1 1 190px;
+    flex: 1 1 220px;
     min-width: 0;
   }
 
-  .admin-schedule-week-controls {
-    align-items: stretch;
+  .admin-schedule-date-filter {
+    flex: 1 1 150px;
+    min-width: 0;
   }
 
-  .admin-schedule-week-label {
-    flex: 1 1 190px;
+  .admin-schedule-form-grid {
+    grid-template-columns: 1fr;
   }
 
   .admin-appointment-actions {

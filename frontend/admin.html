@@ -228,36 +228,69 @@
         <div class="stat-card">
           <div class="admin-appointments-heading">
             <div>
-              <h2>Ca trực theo ngày</h2>
-              <p>Ca được thêm cho một ngày sẽ thay thế lịch tuần mặc định của bác sĩ trong ngày đó. Phòng khám nghỉ Chủ nhật.</p>
+              <h2>Quản lý lịch trực</h2>
+              <p>Thêm, theo dõi và xóa các ca trực của bác sĩ.</p>
             </div>
           </div>
-          <div class="admin-schedule-filters">
+          <div class="admin-schedule-filters admin-schedule-list-filters">
             <label class="admin-schedule-doctor-filter" for="adminScheduleDoctorFilter">Bác sĩ
               <select id="adminScheduleDoctorFilter" class="form-control" disabled>
                 <option value="all">Đang tải bác sĩ...</option>
               </select>
             </label>
-            <div class="admin-schedule-week-controls" aria-label="Chọn tuần">
-              <button type="button" class="btn btn-light-outline" id="adminSchedulePreviousWeek">Tuần trước</button>
-              <strong id="adminScheduleWeekLabel" class="admin-schedule-week-label"></strong>
-              <button type="button" class="btn btn-light-outline" id="adminScheduleNextWeek">Tuần sau</button>
-              <button type="button" class="btn btn-light-outline" id="adminScheduleCurrentWeek">Tuần này</button>
-            </div>
+            <label class="admin-schedule-date-filter" for="adminScheduleWeekStart">Từ ngày
+              <input id="adminScheduleWeekStart" class="form-control" type="date" required>
+            </label>
+            <label class="admin-schedule-date-filter" for="adminScheduleWeekEnd">Đến ngày
+              <input id="adminScheduleWeekEnd" class="form-control" type="date" required>
+            </label>
+            <button type="button" class="btn btn-primary" id="adminScheduleLoadButton">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Tải danh sách
+            </button>
           </div>
           <p id="adminScheduleDoctorsStatus" class="booking-inline-status" role="status" aria-live="polite"></p>
           <p id="adminSchedulesStatus" class="booking-inline-status" role="status" aria-live="polite"></p>
+
+          <form id="adminScheduleCreateForm" class="admin-doctor-form admin-schedule-create-form">
+            <h3>Thêm ca trực mới</h3>
+            <div class="admin-doctor-form-grid admin-schedule-form-grid">
+              <label for="adminScheduleCreateDoctor">Bác sĩ
+                <select id="adminScheduleCreateDoctor" class="form-control" name="doctor_id" required disabled>
+                  <option value="">Đang tải bác sĩ...</option>
+                </select>
+              </label>
+              <label for="adminScheduleCreateDate">Ngày trực
+                <input id="adminScheduleCreateDate" class="form-control" name="shift_date" type="date" required>
+              </label>
+              <label for="adminScheduleCreateStart">Giờ bắt đầu
+                <input id="adminScheduleCreateStart" class="form-control" name="start_time" type="time" required>
+              </label>
+              <label for="adminScheduleCreateEnd">Giờ kết thúc
+                <input id="adminScheduleCreateEnd" class="form-control" name="end_time" type="time" required>
+              </label>
+              <label for="adminScheduleCreateDuration">Thời lượng slot (phút)
+                <input id="adminScheduleCreateDuration" class="form-control" name="slot_duration" type="number" min="1" step="1" value="30" required>
+              </label>
+            </div>
+            <p id="adminScheduleCreateStatus" class="admin-doctor-form-error" role="status" aria-live="polite" hidden></p>
+            <div class="admin-doctor-form-actions">
+              <button type="submit" class="btn btn-primary" id="adminScheduleCreateButton">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i> Thêm ca trực
+              </button>
+            </div>
+          </form>
+
           <div class="admin-schedules-table-wrap">
             <table class="data-table admin-schedules-table">
               <thead>
                 <tr>
-                  <th>Ngày</th>
-                  <th>Thứ</th>
                   <th>Bác sĩ</th>
                   <th>Chuyên khoa</th>
+                  <th>Ngày trực</th>
                   <th>Giờ bắt đầu – kết thúc</th>
-                  <th>Thời lượng mỗi khung giờ (phút)</th>
+                  <th>Thời lượng slot (phút)</th>
                   <th>Lịch hẹn đang gắn</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody id="adminSchedulesBody"></tbody>

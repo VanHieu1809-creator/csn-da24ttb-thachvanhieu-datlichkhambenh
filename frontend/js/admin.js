@@ -40,13 +40,6 @@ function adminEmailDeliveryStatus(status) {
   return labels[status] || '';
 }
 
-function getAdminWeekStart(date = new Date()) {
-  const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const daysSinceMonday = (weekStart.getDay() + 6) % 7;
-  weekStart.setDate(weekStart.getDate() - daysSinceMonday);
-  return weekStart;
-}
-
 function adminDateToISO(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -54,33 +47,31 @@ function adminDateToISO(date) {
   return `${year}-${month}-${day}`;
 }
 
-let adminScheduleWeekStart = getAdminWeekStart();
 let adminScheduleDoctorsLoaded = false;
 let adminShiftRequestId = 0;
 
-function updateAdminScheduleWeekLabel() {
-  const weekEnd = new Date(adminScheduleWeekStart);
-  weekEnd.setDate(weekEnd.getDate() + 6);
-  document.getElementById('adminScheduleWeekLabel').textContent =
-    `${formatAdminDate(adminDateToISO(adminScheduleWeekStart))} - ${formatAdminDate(adminDateToISO(weekEnd))}`;
-}
-
 async function loadAdminScheduleDoctors() {
-  const select = document.getElementById('adminScheduleDoctorFilter');
+  const filter = document.getElementById('adminScheduleDoctorFilter');
+  const formSelect = document.getElementById('adminScheduleCreateDoctor');
   const status = document.getElementById('adminScheduleDoctorsStatus');
-  if (!select || !status || adminScheduleDoctorsLoaded) return;
+  if (!filter || !formSelect || !status || adminScheduleDoctorsLoaded) return;
 
-  select.disabled = true;
-  select.innerHTML = '<option value="all">Đang tải bác sĩ...</option>';
+  filter.disabled = true;
+  formSelect.disabled = true;
+  filter.innerHTML = '<option value="all">Đang tải bác sĩ...</option>';
+  formSelect.innerHTML = '<option value="">Đang tải bác sĩ...</option>';
   status.setAttribute('role', 'status');
   status.textContent = '';
   try {
     const response = await apiRequest('/admin/doctors');
     if (!Array.isArray(response.data)) throw new Error('Dữ liệu danh sách bác sĩ không hợp lệ.');
-    select.innerHTML = '<option value="all">Tất cả bác sĩ</option>' + response.data.map(doctor =>
+    const doctorOptions = response.data.map(doctor =>
       `<option value="${escapeAdminMarkup(doctor.id)}">${escapeAdminMarkup(doctor.display_name || doctor.full_name)}</option>`
     ).join('');
-    select.disabled = false;
+    filter.innerHTML = '<option value="all">Tất cả bác sĩ</option>' + doctorOptions;
+    formSelect.innerHTML = '<option value="">Chọn bác sĩ</option>' + doctorOptions;
+    filter.disabled = false;
+    formSelect.disabled = false;
     adminScheduleDoctorsLoaded = true;
   } catch (error) {
     status.setAttribute('role', 'alert');
@@ -93,15 +84,25 @@ async function loadAdminShifts() {
   const tbody = document.getElementById('adminSchedulesBody');
   const status = document.getElementById('adminSchedulesStatus');
   const doctorFilter = document.getElementById('adminScheduleDoctorFilter');
-  if (!tbody || !status || !doctorFilter) return;
+  const weekStart = document.getElementById('adminScheduleWeekStart');
+  const weekEnd = document.getElementById('adminScheduleWeekEnd');
+  if (!tbody || !status || !doctorFilter || !weekStart || !weekEnd) return;
+  if (!weekStart.value || !weekEnd.value) {
+    status.setAttribute('role', 'alert');
+    status.textContent = 'Vui lòng chọn ngày bắt đầu và ngày kết thúc.';
+    return;
+  }
+  if (weekStart.value > weekEnd.value) {
+    status.setAttribute('role', 'alert');
+    status.textContent = 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.';
+    return;
+  }
 
   const requestId = ++adminShiftRequestId;
-  const weekEnd = new Date(adminScheduleWeekStart);
-  weekEnd.setDate(weekEnd.getDate() + 6);
   const params = new URLSearchParams({
     doctor_id: doctorFilter.value || 'all',
-    week_start: adminDateToISO(adminScheduleWeekStart),
-    week_end: adminDateToISO(weekEnd)
+    week_start: weekStart.value,
+    week_end: weekEnd.value
   });
   status.setAttribute('role', 'status');
   status.textContent = 'Đang tải ca trực...';
@@ -113,34 +114,88 @@ async function loadAdminShifts() {
     if (!Array.isArray(response.data)) throw new Error('Dữ liệu ca trực không hợp lệ.');
     const shifts = response.data;
     if (!shifts.length) {
-      status.textContent = 'Chưa có ca trực theo ngày trong tuần này. Bác sĩ làm việc theo lịch tuần mặc định.';
+      status.textContent = 'Không có ca trực trong khoảng ngày đã chọn.';
       return;
     }
 
     tbody.innerHTML = shifts.map(shift => {
       const shiftDate = String(shift.shift_date || '').slice(0, 10);
-      const [year, month, day] = shiftDate.split('-').map(Number);
-      const weekday = year && month && day
-        ? ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][new Date(year, month - 1, day).getDay()]
-        : '—';
       return `
         <tr>
-          <td>${escapeAdminMarkup(formatAdminDate(shiftDate) || '—')}</td>
-          <td>${weekday}</td>
           <td>${escapeAdminMarkup(shift.doctor_display || '—')}</td>
           <td>${escapeAdminMarkup(shift.specialty_name || '—')}</td>
+          <td>${escapeAdminMarkup(formatAdminDate(shiftDate) || '—')}</td>
           <td>${escapeAdminMarkup(String(shift.start_time || '').slice(0, 5))} – ${escapeAdminMarkup(String(shift.end_time || '').slice(0, 5))}</td>
           <td>${escapeAdminMarkup(shift.slot_duration ?? '—')}</td>
           <td>${escapeAdminMarkup(shift.active_bookings ?? 0)}</td>
+          <td><button type="button" class="btn btn-light-outline admin-shift-delete" data-id="${escapeAdminMarkup(shift.id)}">Xóa ca</button></td>
         </tr>
       `;
     }).join('');
-    status.textContent = `Có ${shifts.length} ca trực trong tuần.`;
+    status.textContent = `Có ${shifts.length} ca trực trong khoảng ngày đã chọn.`;
   } catch (error) {
     if (requestId !== adminShiftRequestId) return;
     status.setAttribute('role', 'alert');
     status.innerHTML = `${escapeAdminMarkup(error.message || 'Không thể tải danh sách ca trực.')} <button type="button" class="booking-retry" id="adminShiftsRetry">Thử lại</button>`;
     console.error('Không thể tải danh sách ca trực quản trị:', error.message);
+  }
+}
+
+async function createAdminShift(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const message = document.getElementById('adminScheduleCreateStatus');
+  const submitButton = document.getElementById('adminScheduleCreateButton');
+  message.hidden = true;
+  message.textContent = '';
+  submitButton.disabled = true;
+
+  try {
+    const formData = new FormData(form);
+    const response = await apiRequest('/admin/shifts', {
+      method: 'POST',
+      body: JSON.stringify({
+        doctor_id: formData.get('doctor_id'),
+        shift_date: formData.get('shift_date'),
+        start_time: formData.get('start_time'),
+        end_time: formData.get('end_time'),
+        slot_duration: formData.get('slot_duration')
+      })
+    });
+    form.reset();
+    form.elements.slot_duration.value = '30';
+    message.classList.remove('admin-schedule-error');
+    message.classList.add('admin-schedule-success');
+    message.setAttribute('role', 'status');
+    message.textContent = response.message || 'Tạo ca trực mới thành công.';
+    message.hidden = false;
+    await loadAdminShifts();
+  } catch (error) {
+    message.classList.remove('admin-schedule-success');
+    message.classList.add('admin-schedule-error');
+    message.setAttribute('role', 'alert');
+    message.textContent = error.message || 'Không thể tạo ca trực.';
+    message.hidden = false;
+  } finally {
+    submitButton.disabled = false;
+  }
+}
+
+async function deleteAdminShift(shiftId) {
+  if (!window.confirm('Bạn có chắc chắn muốn xóa ca trực này?')) return;
+  const status = document.getElementById('adminSchedulesStatus');
+  status.setAttribute('role', 'status');
+  status.textContent = 'Đang xóa ca trực...';
+  try {
+    const response = await apiRequest(`/admin/shifts/${encodeURIComponent(shiftId)}`, {
+      method: 'DELETE'
+    });
+    await loadAdminShifts();
+    status.setAttribute('role', 'status');
+    status.textContent = response.message || 'Xóa ca trực thành công.';
+  } catch (error) {
+    status.setAttribute('role', 'alert');
+    status.textContent = error.message || 'Không thể xóa ca trực.';
   }
 }
 
@@ -418,7 +473,6 @@ function switchAdminTab(tab, el) {
   if (isAppointments) loadAdminAppointments();
   if (isDoctors) loadAdminDoctors();
   if (isSchedules) {
-    updateAdminScheduleWeekLabel();
     loadAdminScheduleDoctors();
     loadAdminShifts();
   }
@@ -426,6 +480,15 @@ function switchAdminTab(tab, el) {
 
 function initAdminDashboard() {
   loadAdminDashboard();
+  const today = new Date();
+  const weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  document.getElementById('adminScheduleWeekStart').value = adminDateToISO(weekStart);
+  document.getElementById('adminScheduleWeekEnd').value = adminDateToISO(weekEnd);
+  document.getElementById('adminScheduleCreateDate').value = adminDateToISO(today);
+
   document.getElementById('adminAppointmentsRefresh')?.addEventListener('click', loadAdminAppointments);
   document.getElementById('adminAppointmentStatusFilter')?.addEventListener('change', loadAdminAppointments);
   document.getElementById('adminAppointmentSearch')?.addEventListener('input', () => {
@@ -463,21 +526,11 @@ function initAdminDashboard() {
   document.getElementById('adminDoctorSpecialtyStatus')?.addEventListener('click', event => {
     if (event.target.id === 'adminDoctorSpecialtiesRetry') loadAdminDoctorSpecialties();
   });
-  document.getElementById('adminScheduleDoctorFilter')?.addEventListener('change', loadAdminShifts);
-  document.getElementById('adminSchedulePreviousWeek')?.addEventListener('click', () => {
-    adminScheduleWeekStart.setDate(adminScheduleWeekStart.getDate() - 7);
-    updateAdminScheduleWeekLabel();
-    loadAdminShifts();
-  });
-  document.getElementById('adminScheduleNextWeek')?.addEventListener('click', () => {
-    adminScheduleWeekStart.setDate(adminScheduleWeekStart.getDate() + 7);
-    updateAdminScheduleWeekLabel();
-    loadAdminShifts();
-  });
-  document.getElementById('adminScheduleCurrentWeek')?.addEventListener('click', () => {
-    adminScheduleWeekStart = getAdminWeekStart();
-    updateAdminScheduleWeekLabel();
-    loadAdminShifts();
+  document.getElementById('adminScheduleLoadButton')?.addEventListener('click', loadAdminShifts);
+  document.getElementById('adminScheduleCreateForm')?.addEventListener('submit', createAdminShift);
+  document.getElementById('adminSchedulesBody')?.addEventListener('click', event => {
+    const button = event.target.closest('.admin-shift-delete');
+    if (button) deleteAdminShift(button.dataset.id);
   });
   document.getElementById('adminScheduleDoctorsStatus')?.addEventListener('click', event => {
     if (event.target.id === 'adminScheduleDoctorsRetry') loadAdminScheduleDoctors();
