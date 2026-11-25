@@ -1291,12 +1291,34 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
+.booking-main-card:has(#stepSpecSelect) {
+  padding: 18px;
+}
+
 .booking-step-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
+}
+
+#bookingStepContainer:has(#stepSpecSelect) .booking-step-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+#bookingStepContainer:has(#stepSpecSelect) .booking-step-info {
+  align-items: center;
+  gap: 10px;
+}
+
+#bookingStepContainer:has(#stepSpecSelect) .booking-step-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
 }
 
 .booking-step-info {
@@ -2574,14 +2596,22 @@ img {
 
 @media (max-width: 575px) {
   .booking-stepper {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 2px;
-    overflow: visible;
-    padding-bottom: 0;
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
+    gap: 4px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 0 2px 6px;
+    margin-bottom: 12px;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
   }
 
   .booking-stepper .step-item {
     min-width: 0;
+    scroll-snap-align: start;
   }
 
   .booking-stepper .step-label {
@@ -2596,6 +2626,10 @@ img {
 
   .booking-main-card {
     padding: 16px 12px;
+  }
+
+  .booking-main-card:has(#stepSpecSelect) {
+    padding: 14px 12px;
   }
 
   .booking-calendar,

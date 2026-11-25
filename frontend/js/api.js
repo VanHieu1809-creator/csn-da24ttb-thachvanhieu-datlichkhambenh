@@ -3,13 +3,13 @@ const API_BASE = (window.location.port === '5500' || window.location.protocol ==
   : '/api';
 
 const SPECIALTY_PRESENTATION = {
-  1: { icon: 'fa-notes-medical', label: 'Nội Tổng Quát' },
-  2: { icon: 'fa-heart-pulse', label: 'Tim Mạch' },
-  3: { icon: 'fa-baby', label: 'Nhi Khoa' },
-  4: { icon: 'fa-ear-listen', label: 'Tai – Mũi – Họng' },
-  5: { icon: 'fa-hand-dots', label: 'Da Liễu' },
-  6: { icon: 'fa-person-pregnant', label: 'Sản Phụ Khoa' },
-  7: { icon: 'fa-bone', label: 'Cơ Xương Khớp' },
+  1: { icon: 'fa-notes-medical', label: 'Nội tổng quát' },
+  2: { icon: 'fa-heart-pulse', label: 'Tim mạch' },
+  3: { icon: 'fa-baby', label: 'Nhi khoa' },
+  4: { icon: 'fa-ear-listen', label: 'Tai mũi họng' },
+  5: { icon: 'fa-hand-dots', label: 'Da liễu' },
+  6: { icon: 'fa-person-pregnant', label: 'Sản phụ khoa' },
+  7: { icon: 'fa-bone', label: 'Cơ xương khớp' },
   8: { icon: 'fa-eye', label: 'Mắt' }
 };
 

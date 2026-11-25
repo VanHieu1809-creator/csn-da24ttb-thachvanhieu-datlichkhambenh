@@ -268,6 +268,25 @@ function handleDoctorAction(event) {
   }
 }
 
+const DOCTOR_AVATAR_BACKGROUNDS = [
+  '#e3f5ef', '#e5f2f7', '#f7e9ed', '#e8eef8',
+  '#edf2e5', '#f8efe2', '#e2f0f3', '#f3eafa'
+];
+
+function createStableDoctorAvatar(doctor) {
+  const doctorId = Number(doctor.id);
+  const variant = Number.isInteger(doctorId) && doctorId > 0
+    ? ((doctorId - 1) % DOCTOR_AVATAR_BACKGROUNDS.length) + 1
+    : 1;
+  const gender = variant % 2 === 0 ? 'female' : 'male';
+  return createDoctorPlaceholder(
+    String(doctor.name || ''),
+    DOCTOR_AVATAR_BACKGROUNDS[variant - 1],
+    gender,
+    variant
+  );
+}
+
 async function initializeDoctors() {
   const requestId = ++publicDirectoryRequestId;
   specialtiesLoading = true;
@@ -291,7 +310,10 @@ async function initializeDoctors() {
     console.error('Không thể tải danh sách chuyên khoa:', specialtiesResult.reason?.message);
   }
   if (doctorsResult.status === 'fulfilled') {
-    systemDoctors = doctorsResult.value;
+    systemDoctors = doctorsResult.value.map(doctor => ({
+      ...doctor,
+      avatar: createStableDoctorAvatar(doctor)
+    }));
   } else {
     systemDoctors = [];
     doctorsLoadError = 'doctors';
