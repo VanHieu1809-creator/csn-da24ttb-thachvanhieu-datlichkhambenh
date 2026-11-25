@@ -26,6 +26,7 @@ let systemDoctors = [];
 let doctorsLoading = true;
 let doctorsLoadError = '';
 let publicDirectoryRequestId = 0;
+let pendingHomeDoctorSpecialty = '';
 const FEATURED_DOCTORS_COUNT = 3;
 
 function escapeDoctorMarkup(value) {
@@ -53,6 +54,25 @@ function isHomeDoctorFilterActive() {
     document.getElementById('homeDoctorSearch')?.value.trim() ||
     document.getElementById('homeDoctorSpecFilter')?.value
   );
+}
+
+function showHomeDoctorsBySpecialty(specialtyId) {
+  const filter = document.getElementById('homeDoctorSpecFilter');
+  if (!filter) return;
+
+  const value = String(specialtyId);
+  if (Array.from(filter.options).some(option => option.value === value)) {
+    filter.value = value;
+    filter.dispatchEvent(new Event('change', { bubbles: true }));
+  } else {
+    pendingHomeDoctorSpecialty = value;
+  }
+
+  const doctorsSection = document.querySelector('.doctors-section');
+  if (doctorsSection) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    doctorsSection.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  }
 }
 
 function renderDoctorCard(doctor) {
@@ -298,6 +318,13 @@ async function initializeDoctors() {
       renderDoctorLists();
     });
   });
+
+  const homeSelect = document.getElementById('homeDoctorSpecFilter');
+  if (pendingHomeDoctorSpecialty && Array.from(homeSelect?.options || []).some(option => option.value === pendingHomeDoctorSpecialty)) {
+    homeSelect.value = pendingHomeDoctorSpecialty;
+    pendingHomeDoctorSpecialty = '';
+    homeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
 
   document.getElementById('homeDoctorsGrid')?.addEventListener('click', event => {
     if (!event.target.closest('[data-doctor-filter-reset]')) return;
