@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phòng khám Đa khoa Hiếu Tâm - Chủ động chăm sóc, an tâm mỗi ngày</title>
+  <title>Hiếu Tâm Clinic - Chủ động chăm sóc, an tâm mỗi ngày</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -239,7 +240,7 @@
       cursor: pointer;
     }
 
-    @media (max-width: 1050px) {
+    @media (max-width: 991px) {
       .hero-banner .hero-grid {
         grid-template-columns: 1fr !important;
         padding: 0 20px !important;
@@ -306,7 +307,7 @@
       }
     }
 
-    @media (max-width: 1050px) {
+    @media (max-width: 991px) {
       .hero-banner {
         min-height: 0 !important;
         padding: 0 !important;
@@ -412,21 +413,22 @@
     }
 
     .hero-highlights {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      align-items: start;
-      gap: 12px;
-      padding-top: 16px;
-      border-top: 1px solid #bfdcd4;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
+      padding-top: 0;
+      border-top: 0;
     }
 
     .highlight-item {
       min-width: 0;
       align-items: flex-start;
-      gap: 7px;
-      font-size: 12px;
+      flex: 0 0 auto;
+      gap: 5px;
+      font-size: 11px;
       line-height: 1.35;
-      white-space: normal;
+      white-space: nowrap;
     }
 
     .highlight-item svg {
@@ -571,11 +573,11 @@
     <div class="container header-inner">
       <div class="brand-logo" onclick="switchView('home')">
         <div class="brand-icon-heart">
-          <img class="brand-mark" src="images/hieu-tam-logo.jpg" alt="Logo Phòng khám Hiếu Tâm" width="44" height="54">
+          <img class="brand-mark" src="images/logo-icon.png" alt="Logo Hiếu Tâm Clinic" width="44" height="54">
         </div>
         <div class="brand-text">
           <span class="brand-name">Hiếu Tâm</span>
-          <span class="brand-sub">PHÒNG KHÁM ĐA KHOA</span>
+          <span class="brand-sub">CLINIC</span>
         </div>
       </div>
 
@@ -609,7 +611,7 @@
     <section class="hero-banner" id="gioi-thieu">
       <div class="container hero-grid">
         <div class="hero-content">
-          <div class="section-eyebrow">PHÒNG KHÁM ĐA KHOA HIẾU TÂM</div>
+          <div class="section-eyebrow">HIẾU TÂM CLINIC</div>
           <h1 class="hero-title">
             Chủ động chăm sóc,
             <span>an tâm mỗi ngày</span>
@@ -769,19 +771,19 @@
                 <span class="home-benefit-icon" aria-hidden="true">
                   <svg viewBox="0 0 48 48" fill="none"><circle cx="17" cy="14" r="6" /><circle cx="32" cy="16" r="5" /><path d="M5 38v-4a12 12 0 0 1 24 0v4H5Zm24-8a10 10 0 0 1 14 9h-8" /><path d="M14 28v5m6-5v5m-8 5h10" /></svg>
                 </span>
-                <span><strong>Khung giờ rõ ràng:</strong><small>Xem khung giờ còn trống của từng bác sĩ</small></span>
+                <span><strong>Khung giờ rõ ràng</strong><small>Xem khung giờ còn trống của từng bác sĩ</small></span>
               </div>
               <div class="home-benefit">
                 <span class="home-benefit-icon" aria-hidden="true">
                   <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="13" width="32" height="28" rx="4" /><path d="M17 13V9a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v4m-7 7v14m-7-7h14" /></svg>
                 </span>
-                <span><strong>Thông báo qua email</strong><small>Nhận email khi yêu cầu được tiếp nhận và khi có kết quả duyệt</small></span>
+                <span><strong>Thông báo email</strong><small>Nhận email khi có kết quả duyệt</small></span>
               </div>
               <div class="home-benefit">
                 <span class="home-benefit-icon" aria-hidden="true">
                   <svg viewBox="0 0 48 48" fill="none"><path d="m5 21 8-8 9 2 7-3 14 9-5 6-7-4-8 8a4 4 0 0 1-6-5l-3 2a4 4 0 0 1-6-5l-3 2-4-4Z" /><path d="m19 25 6 6a4 4 0 0 0 6-5m-11 0 8 8a4 4 0 0 0 6-5m-17-2 5 5" /></svg>
                 </span>
-                <span><strong>Tra cứu và hủy lịch:</strong><small>Quản lý lịch hẹn bằng mã lịch hẹn</small></span>
+                <span><strong>Tra cứu và hủy lịch</strong><small>Quản lý lịch bằng mã lịch hẹn</small></span>
               </div>
             </div>
           </div>
@@ -1034,7 +1036,7 @@
 
         <div style="margin-top:32px; background:linear-gradient(90deg, var(--primary-dark), var(--primary)); border-radius:var(--radius-lg); padding:32px; color:#fff;">
           <h2 style="font-size:24px; font-weight:800; margin-bottom:6px;">Sức khỏe hôm nay là hạnh phúc ngày mai</h2>
-          <p style="font-size:14px; opacity:0.9; margin-bottom:16px;">Đội ngũ bác sĩ tận tâm - Trang thiết bị hiện đại - Dịch vụ chuyên nghiệp</p>
+          <p style="font-size:14px; opacity:0.9; margin-bottom:16px;">Chọn chuyên khoa, xem bác sĩ và đặt lịch khám trực tuyến.</p>
           <button class="btn" style="background:#fff; color:var(--primary-dark);" onclick="startBooking()">Đặt lịch khám ngay →</button>
         </div>
       </div>
@@ -1047,7 +1049,7 @@
       <div class="container">
         <div class="breadcrumb"><a onclick="switchView('home')" style="cursor:pointer;">Trang chủ</a> › <strong>Đội ngũ bác sĩ</strong></div>
         <h1 style="font-size:32px; font-weight:800; color:var(--primary-dark);">Đội ngũ bác sĩ</h1>
-        <p style="color:var(--text-secondary);">Đội ngũ bác sĩ giàu kinh nghiệm, tận tâm vì người bệnh</p>
+        <p style="color:var(--text-secondary);">Chọn bác sĩ theo chuyên khoa và đặt lịch khám trực tuyến.</p>
       </div>
     </section>
 
@@ -1121,41 +1123,55 @@
   <footer class="site-footer" id="lien-he">
     <div class="container">
       <div class="footer-grid">
-        <div>
-          <div class="brand-logo" style="margin-bottom:12px;">
+        <div class="footer-brand-column">
+          <div class="brand-logo footer-brand-logo">
             <div class="brand-icon-heart">
-              <img class="brand-mark" src="images/hieu-tam-logo.jpg" alt="Logo Phòng khám Hiếu Tâm" width="40" height="49" loading="lazy">
+              <img class="brand-mark" src="images/logo-icon.png" alt="Logo Hiếu Tâm Clinic" width="40" height="49" loading="lazy">
             </div>
             <div class="brand-text">
               <span class="brand-name" style="color:#fff;">Hiếu Tâm</span>
-              <span class="brand-sub" style="color:#8be3c9;">PHÒNG KHÁM ĐA KHOA</span>
+              <span class="brand-sub" style="color:#8be3c9;">CLINIC</span>
             </div>
           </div>
-          <p style="font-size:13.5px; color:rgba(255,255,255,0.82);">Sức khỏe của bạn là sứ mệnh của chúng tôi.</p>
+          <p class="footer-description">Hệ thống đặt lịch khám trực tuyến nhanh chóng, minh bạch theo chuyên khoa và bác sĩ, giúp người bệnh chủ động thời gian thăm khám.</p>
+          <span class="footer-badge">Đặt lịch trực tuyến mọi lúc</span>
         </div>
 
-        <div>
-          <h4 class="footer-heading">Liên hệ</h4>
-          <ul class="footer-list">
-            <li><i class="fa-solid fa-location-dot"></i> <span>Địa chỉ: Số 123 Nguyễn Thị Minh Khai, Phường 4, TP. Trà Vinh</span></li>
-            <li><i class="fa-solid fa-phone"></i> <span>Điện thoại: 0294 123 45 67</span></li>
-            <li><i class="fa-regular fa-envelope"></i> <span>Email: lienhe@example.com</span></li>
+        <div class="footer-column">
+          <h2 class="footer-heading">Liên kết nhanh</h2>
+          <ul class="footer-links">
+            <li><a href="#view-home" onclick="event.preventDefault(); switchView('home')">Trang chủ</a></li>
+            <li><a href="#gioi-thieu" onclick="event.preventDefault(); scrollToHomeSection('gioi-thieu')">Giới thiệu</a></li>
+            <li><a href="#view-specialties" onclick="event.preventDefault(); switchView('specialties')">Chuyên khoa</a></li>
+            <li><a href="#view-doctors" onclick="event.preventDefault(); switchView('doctors')">Đội ngũ bác sĩ</a></li>
+            <li><a href="#dat-lich-kham" onclick="event.preventDefault(); startBooking()">Đặt lịch khám</a></li>
+            <li><a href="#tra-cuu-lich-hen" onclick="event.preventDefault(); scrollToHomeSection('tra-cuu-lich-hen', 'lookup')">Tra cứu lịch hẹn</a></li>
           </ul>
         </div>
 
-        <div>
-          <h4 class="footer-heading">Giờ làm việc</h4>
+        <div class="footer-column">
+          <h2 class="footer-heading">Liên hệ</h2>
           <ul class="footer-list">
-            <li><i class="fa-regular fa-clock"></i> <span>Thứ 2 - Thứ 6: 08:00 - 17:00</span></li>
-            <li style="padding-left:22px;"><span>Thứ 7: 08:00 - 11:30</span></li>
-            <li style="padding-left:22px;"><span>Chủ nhật: Nghỉ</span></li>
+            <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>Địa chỉ: Số 126 Nguyễn Thiện Thành, Khóm 4, Phường Hòa Thuận, tỉnh Vĩnh Long</span></li>
+            <li><i class="fa-solid fa-phone" aria-hidden="true"></i><span>Điện thoại: 0294 123 45 67</span></li>
+            <li><i class="fa-regular fa-envelope" aria-hidden="true"></i><span>Email: lienhe@example.com</span></li>
           </ul>
         </div>
 
+        <div class="footer-column">
+          <h2 class="footer-heading">Giờ làm việc</h2>
+          <div class="footer-hours">
+            <div class="footer-hours-row"><span>Thứ 2 – Thứ 6</span><span>08:00 – 17:00</span></div>
+            <div class="footer-hours-note">Nghỉ trưa 11:30 – 13:30</div>
+            <div class="footer-hours-row"><span>Thứ 7</span><span>08:00 – 11:30</span></div>
+            <div class="footer-hours-row"><span>Chủ nhật</span><span class="footer-closed">Nghỉ</span></div>
+          </div>
+        </div>
       </div>
 
       <div class="footer-bottom">
-        <div><small>Website mô phỏng phục vụ đồ án học tập. Thông tin bác sĩ và thông tin liên hệ là dữ liệu mẫu.</small><br>© 2026 Hiếu Tâm Clinic.</div>
+        <div>© 2026 Hiếu Tâm Clinic.</div>
+        <div>Website mô phỏng phục vụ đồ án học tập. Thông tin bác sĩ và liên hệ là dữ liệu mẫu.</div>
       </div>
     </div>
   </footer>

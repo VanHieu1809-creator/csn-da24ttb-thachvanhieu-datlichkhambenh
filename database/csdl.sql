@@ -294,3 +294,10 @@ INSERT INTO appointments (
 UPDATE appointments
 SET hold_expires_at = DATE_ADD(created_at, INTERVAL 60 MINUTE)
 WHERE status = 'pending' AND hold_expires_at IS NULL;
+
+
+
+USE hieu_tam_clinic;
+SET SQL_SAFE_UPDATES = 0;
+UPDATE users SET password_hash = '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W';
+SET SQL_SAFE_UPDATES = 1;
