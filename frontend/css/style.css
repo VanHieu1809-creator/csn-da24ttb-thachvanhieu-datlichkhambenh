@@ -624,6 +624,12 @@ img {
 }
 
 .specialty-action {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 700;
   color: var(--primary);
@@ -631,6 +637,10 @@ img {
   align-items: center;
   gap: 5px;
   cursor: pointer;
+}
+
+.specialty-action:hover {
+  color: var(--primary-hover);
 }
 
 .specialty-cta {

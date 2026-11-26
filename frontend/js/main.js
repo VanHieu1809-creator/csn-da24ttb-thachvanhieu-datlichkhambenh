@@ -192,6 +192,7 @@ function renderSpecialtyCards() {
         <div class="specialty-icon" style="margin-bottom:10px;"><i class="fa-solid ${escapeDoctorMarkup(presentation.icon || 'fa-stethoscope')}" aria-hidden="true"></i></div>
         <h3 class="specialty-name">${escapeDoctorMarkup(presentation.label || specialty.name)}</h3>
         <p class="specialty-desc">${escapeDoctorMarkup(specialty.description || '')}</p>
+        <button type="button" class="specialty-action" data-home-doctor-specialty="${escapeDoctorMarkup(specialty.id)}">Xem bác sĩ <span aria-hidden="true">→</span></button>
       </div>
     `;
   }).join('');
@@ -273,6 +274,25 @@ const DOCTOR_AVATAR_BACKGROUNDS = [
   '#edf2e5', '#f8efe2', '#e2f0f3', '#f3eafa'
 ];
 
+const FEMALE_AVATAR_HAIRSTYLES = [
+  {
+    back: '<path d="M243 132c-9 20-10 43-4 65l12 15 8-67-7-25Zm154 0c9 20 10 43 4 65l-12 15-8-67 7-25Z" fill="#263c3a"/>',
+    front: '<path d="M239 155c0-57 34-95 81-95s81 38 81 95c-17-19-35-29-55-35-10-3-20-4-29-3-29 2-54 15-78 38Z" fill="#263c3a"/>'
+  },
+  {
+    back: '<path d="M243 132c-9 20-10 43-4 65l12 15 8-67-7-25Zm154 0c9 20 10 43 4 65l-12 15-8-67 7-25Z" fill="#263c3a"/>',
+    front: '<path d="M239 154c3-56 36-94 82-94 42 0 74 31 80 79-18-18-36-29-57-34-12-3-23-3-34 0 15 7 25 18 30 33-26-15-60-12-101 16Z" fill="#263c3a"/><path d="M327 77c-7 15-8 30-2 44" fill="none" stroke="#617c75" stroke-width="4" stroke-linecap="round"/>'
+  },
+  {
+    back: '<path d="M245 121c-14 28-18 70-12 111l9 54 20 8 12-16-8-79-3-61Zm150 0c14 28 18 70 12 111l-9 54-20 8-12-16 8-79 3-61Z" fill="#263c3a"/>',
+    front: '<path d="M239 154c0-57 34-95 81-95s81 38 81 95c-18-20-39-31-61-35-34-6-68 7-101 35Z" fill="#263c3a"/><path d="M256 132c-4 20-3 36 1 50m127-50c4 20 3 36-1 50" fill="none" stroke="#617c75" stroke-width="3" stroke-linecap="round"/>'
+  },
+  {
+    back: '<path d="M288 73c-8-17 0-38 17-47 18-10 43-7 54 9 10 14 7 32-6 44-16-8-48-9-65-6Z M243 132c-9 20-10 43-4 65l12 15 8-67-7-25Zm154 0c9 20 10 43 4 65l-12 15-8-67 7-25Z" fill="#263c3a"/>',
+    front: '<path d="M241 155c4-53 34-88 79-88 40 0 70 31 78 78-23-18-47-27-71-25-30 2-58 14-86 35Z" fill="#263c3a"/>'
+  }
+];
+
 function createStableDoctorAvatar(doctor) {
   const doctorId = Number(doctor.id);
   const variant = Number.isInteger(doctorId) && doctorId > 0
@@ -291,13 +311,14 @@ function createStableDoctorAvatar(doctor) {
   const face = '<circle cx="320" cy="170" r="82" fill="#f1c8ad"/>';
   const hair = svg.match(/<path d="[^"]+" fill="#263c3a"\/>/)?.[0];
   if (!hair || !svg.includes(face)) {
-    console.error('Không thể sắp xếp các lớp SVG cho avatar bác sĩ nữ.');
+    console.error('Không thể áp dụng kiểu tóc SVG cho avatar bác sĩ nữ.');
     return avatar;
   }
 
-  const layeredSvg = svg.replace(`${face}${hair}`, `${hair}${face}`);
-  const bangs = '<path d="M239 157c8-49 39-82 81-82s74 33 81 82c-23-21-48-31-78-31-32 0-58 10-84 31Z" fill="#263c3a"/>';
-  return `data:image/svg+xml,${encodeURIComponent(layeredSvg.replace('</svg>', `${bangs}</svg>`))}`;
+  const hairstyleIndex = Math.floor((variant - 1) / 2) % FEMALE_AVATAR_HAIRSTYLES.length;
+  const hairstyle = FEMALE_AVATAR_HAIRSTYLES[hairstyleIndex];
+  const layeredSvg = svg.replace(`${face}${hair}`, `${hairstyle.back}${face}${hairstyle.front}`);
+  return `data:image/svg+xml,${encodeURIComponent(layeredSvg)}`;
 }
 
 async function initializeDoctors() {
@@ -451,6 +472,15 @@ function renderDynamicHeroCalendar() {
 
 // Khởi chạy ngay khi tải trang và tự động kiểm tra mỗi phút để đổi ngày khi qua 00:00 đêm
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('specialtyCardsGrid')?.addEventListener('click', event => {
+    const specialtyButton = event.target.closest('[data-home-doctor-specialty]');
+    if (!specialtyButton) return;
+
+    const specialtyId = specialtyButton.dataset.homeDoctorSpecialty;
+    switchView('home');
+    window.setTimeout(() => showHomeDoctorsBySpecialty(specialtyId), 80);
+  });
+
   initializeDoctors();
   renderDynamicHeroCalendar();
   setInterval(renderDynamicHeroCalendar, 60000);
