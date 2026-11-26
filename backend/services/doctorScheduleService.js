@@ -1,6 +1,8 @@
 const DEFAULT_WEEKLY_SCHEDULES = Array.from({ length: 6 }, (_, weekday) => [
-    { weekday, start_time: '07:30:00', end_time: '11:30:00', slot_duration: 30, is_demo: 0 },
-    { weekday, start_time: '13:30:00', end_time: '17:00:00', slot_duration: 30, is_demo: 0 }
+    { weekday, start_time: '08:00:00', end_time: '11:30:00', slot_duration: 30, is_demo: 0 },
+    ...(weekday < 5
+        ? [{ weekday, start_time: '13:30:00', end_time: '17:00:00', slot_duration: 30, is_demo: 0 }]
+        : [])
 ]).flat();
 
 function isDateString(value) {
