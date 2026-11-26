@@ -3363,7 +3363,7 @@ img {
 /* Full-bleed home hero */
 #view-home .hero-banner {
   position: relative !important;
-  min-height: 520px !important;
+  min-height: 460px !important;
   padding: 0 !important;
   overflow: hidden !important;
   background: #e8f7f2 !important;
@@ -3375,7 +3375,7 @@ img {
   display: flex !important;
   width: 100% !important;
   max-width: 1320px !important;
-  min-height: 520px !important;
+  min-height: 460px !important;
   align-items: center !important;
   justify-content: space-between;
   gap: 32px !important;
@@ -3532,5 +3532,236 @@ img {
 
   #view-home .hero-highlights {
     flex-wrap: wrap;
+  }
+}
+
+#view-home .hero-content .hero-title {
+  margin-bottom: 16px;
+}
+
+#view-home .hero-content .hero-desc {
+  max-width: 450px;
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+#view-home .hero-content .hero-cta-group {
+  align-items: stretch;
+  gap: 12px;
+  margin: 0;
+}
+
+#view-home .hero-content .hero-cta-group .btn {
+  min-height: 48px;
+}
+
+#view-home .hero-content .hero-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 0;
+  border: 0;
+}
+
+#view-home .hero-content .highlight-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+#view-home .hero-content .highlight-item svg {
+  flex: 0 0 16px;
+}
+
+#view-home .floating-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+}
+
+#view-home .floating-schedule-card .floating-card-title-sm {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#view-home .floating-schedule-card .floating-badge-status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+#view-home .floating-schedule-card .floating-badge-status.is-closed {
+  background: #eef1f0;
+  color: #6b7280;
+}
+
+#view-home .floating-schedule-card .floating-date-title {
+  margin: 2px 0 0;
+  padding: 0;
+  border: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+#view-home .mini-week-grid {
+  gap: 3px;
+  margin: 10px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+#view-home .mini-day {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+#view-home .mini-day:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+#view-home .mini-day.is-sunday {
+  opacity: 0.45;
+}
+
+#view-home .mini-day-label {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+#view-home .mini-day.active .mini-day-label {
+  color: #0f766e;
+  font-weight: 800;
+}
+
+#view-home .day-number-text,
+#view-home .day-number-active {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+#view-home .day-number-active {
+  background: #0f766e;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(15, 118, 110, 0.22);
+}
+
+#view-home .hero-clinic-hours {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #f3faf7;
+  color: var(--primary-dark);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+#view-home .floating-schedule-card .floating-link {
+  display: block;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #edf4f1;
+  font-size: 12.5px;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+@media (min-width: 992px) {
+  #view-home .floating-schedule-card {
+    top: auto !important;
+    right: max(24px, calc((100vw - 1320px) / 2 + 24px)) !important;
+    bottom: 24px !important;
+    left: auto !important;
+    width: clamp(320px, 25vw, 340px) !important;
+    max-width: 340px !important;
+    margin: 0 0 8px !important;
+    padding: 16px 18px !important;
+    transform: none !important;
+    border: 1px solid #eaf3f0 !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: 0 10px 30px rgba(11, 70, 57, 0.12) !important;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  #view-home .hero-banner .container.hero-grid {
+    grid-template-areas:
+      "hero-copy"
+      "hero-calendar"
+      "hero-image";
+    padding-top: 12px !important;
+    padding-bottom: 16px !important;
+  }
+
+  #view-home .hero-content {
+    padding: 8px 0 12px !important;
+  }
+
+  #view-home .hero-content .hero-title {
+    margin-bottom: 10px;
+    font-size: clamp(30px, 8.5vw, 36px);
+    line-height: 1.08;
+  }
+
+  #view-home .hero-content .hero-desc {
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  #view-home .hero-content .hero-cta-group {
+    gap: 8px;
+  }
+
+  #view-home .hero-content .hero-cta-group .btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  #view-home .hero-content .hero-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    margin-top: 12px;
+  }
+
+  #view-home .hero-content .highlight-item {
+    font-size: 12px;
+  }
+
+  #view-home .floating-schedule-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 14px 14px 12px !important;
+  }
+
+  #view-home .hero-doctor-img-wrap {
+    margin: 12px -20px 0 !important;
   }
 }

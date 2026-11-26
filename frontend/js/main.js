@@ -1,4 +1,4 @@
-// Hàm tự động cập nhật thẻ "Lịch hôm nay" theo đúng ngày thực tế
+// Chuyển đổi giữa các giao diện công khai.
 function switchView(viewName) {
   const targetView = document.getElementById(`view-${viewName}`);
   if (!targetView) {
@@ -412,66 +412,63 @@ async function initializeDoctors() {
   });
 }
 
-function renderDynamicHeroCalendar() {
-  const titleEl = document.getElementById('dynamicCurrentDateTitle');
-  const gridEl = document.getElementById('dynamicMiniWeekGrid');
-  if (!titleEl || !gridEl) return;
+function renderHeroCalendar(selectedDate = new Date()) {
+  const title = document.getElementById('heroCalendarTitle');
+  const daysGrid = document.getElementById('heroCalendarDays');
+  const hours = document.getElementById('heroClinicHours');
+  const status = document.getElementById('heroScheduleStatus');
+  if (!title || !daysGrid || !hours || !status) return;
 
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 0: CN, 1: T2, 2: T3, 3: T4, 4: T5, 5: T6, 6: T7
-  const currentDate = now.getDate();
-  const currentMonth = now.getMonth() + 1;
+  const selected = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+  const weekdayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const weekdayLabels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  const monday = new Date(selected);
+  monday.setDate(selected.getDate() - ((selected.getDay() + 6) % 7));
 
-  const dayNamesFull = [
-    'Chủ Nhật',
-    'Thứ Hai',
-    'Thứ Ba',
-    'Thứ Tư',
-    'Thứ Năm',
-    'Thứ Sáu',
-    'Thứ Bảy'
-  ];
-
-  // Cập nhật dòng tiêu đề: VD "Thứ Năm, 5 tháng 11" (mai tự đổi thành "Thứ Sáu, 6 tháng 11")
-  titleEl.textContent = `${dayNamesFull[dayOfWeek]}, ${currentDate} tháng ${currentMonth}`;
-
-  // Danh sách 7 cột từ Thứ 2 đến Chủ Nhật
-  const weekColumns = [
-    { label: 'T2', jsDay: 1 },
-    { label: 'T3', jsDay: 2 },
-    { label: 'T4', jsDay: 3 },
-    { label: 'T5', jsDay: 4 },
-    { label: 'T6', jsDay: 5 },
-    { label: 'T7', jsDay: 6 },
-    { label: 'CN', jsDay: 0 }
-  ];
-
-  gridEl.innerHTML = weekColumns.map(col => {
-    const isToday = col.jsDay === dayOfWeek;
-    let indicatorHTML = '';
-
-    if (isToday) {
-      // Ngày hôm nay: hiện vòng tròn xanh đậm kèm số ngày thực tế
-      indicatorHTML = `<div class="day-number-active">${currentDate}</div>`;
-    } else if (col.jsDay === 6) {
-      // Thứ 7 (nếu không phải hôm nay): hiện dấu ? nhỏ màu xám giống ảnh mẫu
-      indicatorHTML = `<div class="dot-ring-gray">?</div>`;
-    } else {
-      // Các ngày khác trong tuần: hiện chấm tròn xanh nhỏ có viền mint nhạt giống ảnh mẫu
-      indicatorHTML = `<div class="dot-ring-green"></div>`;
-    }
+  title.textContent = `${weekdayNames[selected.getDay()]}, ${selected.getDate()} tháng ${selected.getMonth() + 1}`;
+  daysGrid.innerHTML = weekdayLabels.map((label, index) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + index);
+    const isSelected = date.getTime() === selected.getTime();
+    const isSunday = index === 6;
+    const dateValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dayNumberClass = isSelected ? 'day-number-active' : 'day-number-text';
 
     return `
-      <div class="mini-day ${isToday ? 'active' : ''}">
-        <span class="mini-day-label">${col.label}</span>
-        <div class="day-slot-wrap">${indicatorHTML}</div>
-      </div>
+      <button type="button" class="mini-day${isSelected ? ' active' : ''}${isSunday ? ' is-sunday' : ''}" data-hero-calendar-date="${dateValue}" aria-pressed="${isSelected}" aria-label="${label}, ${date.getDate()} tháng ${date.getMonth() + 1}">
+        <span class="mini-day-label">${label}</span>
+        <span class="${dayNumberClass}">${date.getDate()}</span>
+      </button>
     `;
   }).join('');
+
+  const isSunday = selected.getDay() === 0;
+  const isSaturday = selected.getDay() === 6;
+  status.textContent = isSunday ? '• Nghỉ Chủ nhật' : '• Đang nhận lịch';
+  status.classList.toggle('is-closed', isSunday);
+  hours.textContent = isSunday
+    ? 'Phòng khám nghỉ Chủ nhật'
+    : isSaturday
+      ? 'Giờ khám: 08:00–11:30 (Chiều nghỉ)'
+      : 'Giờ khám: 08:00–11:30 · 13:30–17:00';
 }
 
-// Khởi chạy ngay khi tải trang và tự động kiểm tra mỗi phút để đổi ngày khi qua 00:00 đêm
 document.addEventListener('DOMContentLoaded', () => {
+  const calendarDays = document.getElementById('heroCalendarDays');
+  calendarDays?.addEventListener('click', event => {
+    const dayButton = event.target.closest('[data-hero-calendar-date]');
+    if (!dayButton) return;
+
+    const [year, month, day] = dayButton.dataset.heroCalendarDate.split('-').map(Number);
+    const selectedDate = new Date(year, month - 1, day);
+    if (Number.isNaN(selectedDate.getTime())) {
+      console.error('Ngày được chọn trên lịch Hero không hợp lệ.');
+      return;
+    }
+    renderHeroCalendar(selectedDate);
+  });
+  renderHeroCalendar();
+
   document.getElementById('specialtyCardsGrid')?.addEventListener('click', event => {
     const specialtyButton = event.target.closest('[data-home-doctor-specialty]');
     if (!specialtyButton) return;
@@ -482,8 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initializeDoctors();
-  renderDynamicHeroCalendar();
-  setInterval(renderDynamicHeroCalendar, 60000);
 
   const params = new URLSearchParams(window.location.search);
   const requestedView = params.get('view');

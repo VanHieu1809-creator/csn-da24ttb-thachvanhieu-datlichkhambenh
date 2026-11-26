@@ -637,25 +637,25 @@
 
           <div class="hero-highlights">
             <div class="highlight-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="M12 8v6M9 11h6"/>
               </svg>
               <span>Đặt lịch trực tuyến</span>
             </div>
             <div class="highlight-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="M9 12l2 2 4-4"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16v16H4z"/>
+                <path d="m4 7 8 6 8-6"/>
               </svg>
               <span>Nhận email thông báo</span>
             </div>
             <div class="highlight-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#148868" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 5h18v14H3z"/>
+                <path d="M7 9h10M7 13h6"/>
               </svg>
-              <span>Tra cứu và hủy lịch hẹn</span>
+              <span>Tra cứu &amp; hủy lịch</span>
             </div>
           </div>
         </div>
@@ -665,15 +665,15 @@
             <img class="hero-doctor-img" src="images/bia.png" alt="Bác sĩ tư vấn cho bệnh nhân tại phòng khám Hiếu Tâm" fetchpriority="high">
           </div>
 
-          <div class="floating-schedule-card">
+          <div class="floating-schedule-card" aria-label="Lịch làm việc phòng khám">
             <div class="floating-card-top">
               <span class="floating-card-title-sm">Lịch hôm nay</span>
-              <span class="floating-badge-status">• Đang nhận lịch</span>
+              <span class="floating-badge-status" id="heroScheduleStatus">• Đang nhận lịch</span>
             </div>
-            <div class="floating-date-title" id="dynamicCurrentDateTitle">Thứ Sáu, 6 tháng 11</div>
-            <div class="mini-week-grid" id="dynamicMiniWeekGrid"></div>
-
-            <span class="floating-link" onclick="document.getElementById('dat-lich-kham')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">Xem chi tiết →</span>
+            <div class="floating-date-title" id="heroCalendarTitle"></div>
+            <div class="mini-week-grid" id="heroCalendarDays" role="group" aria-label="Chọn ngày trong tuần"></div>
+            <div class="hero-clinic-hours" id="heroClinicHours" aria-live="polite"></div>
+            <a class="floating-link" href="#dat-lich-kham" onclick="event.preventDefault(); scrollToHomeSection('dat-lich-kham')">Đặt lịch khám ngay →</a>
           </div>
         </div>
       </div>
@@ -1188,66 +1188,5 @@
   <script src="js/api.js"></script>
   <script src="js/patient.js"></script>
   <script src="js/main.js"></script>
-
-  <!-- Script tự động cập nhật Lịch hôm nay theo ngày thực tế (hiển thị đầy đủ ngày tháng dưới từng thứ) -->
-  <script>
-    function updateClinicCalendar() {
-      const titleEl = document.getElementById('dynamicCurrentDateTitle');
-      const gridEl = document.getElementById('dynamicMiniWeekGrid');
-      if (!titleEl || !gridEl) return;
-
-      const now = new Date();
-      const currentDayOfWeek = now.getDay(); // 0: CN, 1: T2 ... 6: T7
-      const currentDateNum = now.getDate();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear();
-
-      const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-      titleEl.textContent = `${dayNames[currentDayOfWeek]}, ${currentDateNum} tháng ${currentMonth}`;
-
-      // Tính toán ngày của các thứ trong tuần hiện tại (bắt đầu từ Thứ Hai)
-      const currentDayIndex = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1; 
-      const currentMonday = new Date(now);
-      currentMonday.setDate(currentDateNum - currentDayIndex);
-
-      const weekCols = [
-        { label: 'T2', offset: 0 },
-        { label: 'T3', offset: 1 },
-        { label: 'T4', offset: 2 },
-        { label: 'T5', offset: 3 },
-        { label: 'T6', offset: 4 },
-        { label: 'T7', offset: 5 },
-        { label: 'CN', offset: 6 }
-      ];
-
-      gridEl.innerHTML = weekCols.map(col => {
-        const targetDate = new Date(currentMonday);
-        targetDate.setDate(currentMonday.getDate() + col.offset);
-        const targetDateNum = targetDate.getDate();
-
-        // Kiểm tra xem cột này có trùng với ngày hôm nay không
-        const isToday = (targetDate.toDateString() === now.toDateString());
-
-        const dayNumberHTML = isToday
-          ? `<div class="day-number-active">${targetDateNum}</div>`
-          : `<div class="day-number-text">${targetDateNum}</div>`;
-
-        return `
-          <div class="mini-day ${isToday ? 'active' : ''}">
-            <span class="mini-day-label">${col.label}</span>
-            ${dayNumberHTML}
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.renderDynamicHeroCalendar = updateClinicCalendar;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      updateClinicCalendar();
-      setInterval(updateClinicCalendar, 60000);
-    });
-    updateClinicCalendar();
-  </script>
 </body>
 </html>
