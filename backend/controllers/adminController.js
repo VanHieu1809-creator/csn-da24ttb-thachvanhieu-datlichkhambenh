@@ -11,10 +11,17 @@ const {
 } = require('../services/appointmentHoldService');
 const { getScheduleIntervals, loadScheduleContext } = require('../services/doctorScheduleService');
 
+const VALID_SHIFT_DURATIONS = new Set([15, 30, 45, 60]);
+
 function normalizeShiftTime(value) {
     const time = String(value || '');
     const normalized = time.length === 5 ? `${time}:00` : time;
     return /^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(normalized) ? normalized : null;
+}
+
+function normalizeShiftDuration(value) {
+    const duration = Number(value);
+    return Number.isInteger(duration) && VALID_SHIFT_DURATIONS.has(duration) ? duration : null;
 }
 
 function getShiftHoursError(shiftDate, startTime, endTime) {
@@ -279,6 +286,13 @@ async function getShiftsAdmin(req, res) {
 async function createShift(req, res) {
     try {
         const { doctor_id, shift_date, start_time, end_time, slot_duration } = req.body;
+        const slotDuration = normalizeShiftDuration(slot_duration);
+        if (slotDuration === null) {
+            return res.status(400).json({
+                success: false,
+                message: 'Thời lượng slot phải là 15, 30, 45 hoặc 60 phút.'
+            });
+        }
 
         // Kiểm tra bác sĩ tồn tại và đang hoạt động
         const [doctors] = await pool.execute(
@@ -318,7 +332,7 @@ const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
 
         await pool.execute(
             'INSERT INTO doctor_shifts (doctor_id, shift_date, start_time, end_time, slot_duration) VALUES (?, ?, ?, ?, ?)',
-            [Number(doctor_id), shift_date, sTime, eTime, Number(slot_duration) || 30]
+            [Number(doctor_id), shift_date, sTime, eTime, slotDuration]
         );
         return res.status(201).json({ success: true, message: 'Tạo ca trực mới thành công.' });
     } catch (error) {
@@ -327,67 +341,115 @@ const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
 }
 
 async function updateShift(req, res) {
+    const shiftId = Number(req.params.id);
+    if (!Number.isSafeInteger(shiftId) || shiftId <= 0) {
+        return res.status(400).json({ success: false, message: 'Mã ca trực không hợp lệ.' });
+    }
+
+    const { shift_date, start_time, end_time, slot_duration } = req.body || {};
+    const sTime = normalizeShiftTime(start_time);
+    const eTime = normalizeShiftTime(end_time);
+    const slotDuration = normalizeShiftDuration(slot_duration);
+    const scheduleError = getShiftHoursError(shift_date, sTime, eTime);
+    if (scheduleError) {
+        return res.status(400).json({ success: false, message: scheduleError });
+    }
+    if (eTime <= sTime) {
+        return res.status(400).json({ success: false, message: 'Giờ kết thúc phải lớn hơn giờ bắt đầu.' });
+    }
+    if (slotDuration === null) {
+        return res.status(400).json({
+            success: false,
+            message: 'Thời lượng slot phải là 15, 30, 45 hoặc 60 phút.'
+        });
+    }
+
+    let connection;
+    let transactionStarted = false;
     try {
-        const shiftId = Number(req.params.id);
-        const { doctor_id, shift_date, start_time, end_time, slot_duration } = req.body;
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+        transactionStarted = true;
 
-        const [doctors] = await pool.execute(
-            'SELECT id FROM doctors WHERE id = ? AND is_active = 1 LIMIT 1',
-            [Number(doctor_id)]
-        );
-        if (doctors.length === 0) {
-            return res.status(400).json({ success: false, message: 'Bác sĩ không tồn tại hoặc đã bị khóa.' });
-        }
-
-const [[dbToday]] = await pool.execute('SELECT CURDATE() AS today');
-        const todayStr = String(dbToday.today);
-
-        if (String(shift_date) < todayStr) {
-            return res.status(400).json({ success: false, message: 'Không thể đặt ca trực trong quá khứ.' });
-        }
-
-        const sTime = normalizeShiftTime(start_time);
-        const eTime = normalizeShiftTime(end_time);
-        const scheduleError = getShiftHoursError(shift_date, sTime, eTime);
-        if (scheduleError) {
-            return res.status(400).json({ success: false, message: scheduleError });
-        }
-
-        const [bookings] = await pool.execute(
-            `SELECT COUNT(*) AS cnt FROM appointments WHERE shift_id = ? AND status IN ('pending', 'confirmed', 'completed')`,
+        const [[existingShift]] = await connection.execute(
+            `SELECT id, doctor_id FROM doctor_shifts
+             WHERE id = ? AND status = 'active' LIMIT 1`,
             [shiftId]
         );
-        if (bookings[0].cnt > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Không thể sửa giờ ca trực này vì đã có bệnh nhân đặt lịch trong ca.'
-            });
+        const reject = async (statusCode, message) => {
+            await connection.rollback();
+            transactionStarted = false;
+            return res.status(statusCode).json({ success: false, message });
+        };
+        if (!existingShift) {
+            return reject(404, 'Không tìm thấy ca trực đang hoạt động.');
         }
 
-        if (eTime <= sTime) {
-            return res.status(400).json({ success: false, message: 'Giờ kết thúc phải lớn hơn giờ bắt đầu.' });
+        const [[doctor]] = await connection.execute(
+            'SELECT id, room_number, is_active FROM doctors WHERE id = ? LIMIT 1',
+            [existingShift.doctor_id]
+        );
+        if (!doctor || Number(doctor.is_active) !== 1) {
+            return reject(400, 'Bác sĩ không tồn tại hoặc đã bị khóa.');
         }
 
-        const [overlaps] = await pool.execute(
+        await lockAppointmentRoom(connection, doctor.room_number);
+        const [[lockedShift]] = await connection.execute(
+            `SELECT id, doctor_id FROM doctor_shifts
+             WHERE id = ? AND status = 'active' LIMIT 1 FOR UPDATE`,
+            [shiftId]
+        );
+        if (!lockedShift) {
+            return reject(404, 'Không tìm thấy ca trực đang hoạt động.');
+        }
+
+        const [[dbToday]] = await connection.execute('SELECT CURDATE() AS today');
+        if (String(shift_date) < String(dbToday.today)) {
+            return reject(400, 'Không thể sửa ca trực trong quá khứ.');
+        }
+
+        const [bookings] = await connection.execute(
+            `SELECT id FROM appointments
+             WHERE shift_id = ? AND status IN ('pending', 'confirmed', 'completed')
+             LIMIT 1 FOR UPDATE`,
+            [shiftId]
+        );
+        if (bookings.length > 0) {
+            return reject(409, 'Không thể sửa ca trực đã có lịch hẹn của bệnh nhân.');
+        }
+
+        const [overlaps] = await connection.execute(
             `SELECT id FROM doctor_shifts
-             WHERE doctor_id = ? AND shift_date = ? AND status = 'active' AND id != ?
-               AND (? < end_time AND start_time < ?)`,
-            [Number(doctor_id), shift_date, shiftId, sTime, eTime]
+             WHERE doctor_id = ? AND shift_date = ? AND status = 'active' AND id <> ?
+               AND (? < end_time AND start_time < ?)
+             LIMIT 1 FOR UPDATE`,
+            [lockedShift.doctor_id, shift_date, shiftId, sTime, eTime]
         );
         if (overlaps.length > 0) {
-            return res.status(409).json({ success: false, message: 'Khung giờ sửa bị trùng với một ca trực khác của bác sĩ trong ngày!' });
+            return reject(409, 'Khung giờ bị trùng với ca trực khác của bác sĩ trong ngày.');
         }
 
-        await pool.execute(
+        await connection.execute(
             `UPDATE doctor_shifts
-             SET doctor_id = ?, shift_date = ?, start_time = ?, end_time = ?, slot_duration = ?
-             WHERE id = ?`,
-            [Number(doctor_id), shift_date, sTime, eTime, Number(slot_duration) || 30, shiftId]
+             SET shift_date = ?, start_time = ?, end_time = ?, slot_duration = ?
+             WHERE id = ? AND status = 'active'`,
+            [shift_date, sTime, eTime, slotDuration, shiftId]
         );
-
+        await connection.commit();
+        transactionStarted = false;
         return res.json({ success: true, message: 'Cập nhật ca trực thành công.' });
     } catch (error) {
+        if (connection && transactionStarted) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error('Không thể hoàn tác cập nhật ca trực:', rollbackError.message);
+            }
+        }
+        console.error('Lỗi cập nhật ca trực:', error.message);
         return res.status(500).json({ success: false, message: 'Lỗi khi cập nhật ca trực.' });
+    } finally {
+        if (connection) connection.release();
     }
 }
 
