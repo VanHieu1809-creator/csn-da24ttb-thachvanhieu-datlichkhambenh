@@ -190,15 +190,15 @@ CREATE TABLE contact_messages (
 
 -- DỮ LIỆU MẪU KIỂM THỬ (Mật khẩu mặc định: 123456)
 INSERT INTO users (id, email, password_hash, full_name, role, is_active) VALUES
-(1, 'admin@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Quản Trị Viên Hiếu Tâm', 'admin', 1),
-(2, 'bs.minhtriet@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Nguyễn Minh Triết', 'doctor', 1),
-(3, 'bs.thanhha@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Lê Thanh Hà', 'doctor', 1),
-(4, 'bs.hoangnam@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Trần Hoàng Nam', 'doctor', 1),
-(5, 'bs.phuongthao@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Vũ Phương Thảo', 'doctor', 1),
-(6, 'bs.quochuy@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Đặng Quốc Huy', 'doctor', 1),
-(7, 'bs.thuylinh@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Phạm Thùy Linh', 'doctor', 1),
-(8, 'bs.minhtuan@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Hoàng Minh Tuấn', 'doctor', 1),
-(9, 'bs.ngocmai@hieutam.vn', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Nguyễn Ngọc Mai', 'doctor', 1);
+(1, 'admin@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Quản Trị Viên Hiếu Tâm', 'admin', 1),
+(2, 'bs.minhtriet@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Nguyễn Minh Triết', 'doctor', 1),
+(3, 'bs.thanhha@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Lê Thanh Hà', 'doctor', 1),
+(4, 'bs.hoangnam@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Trần Hoàng Nam', 'doctor', 1),
+(5, 'bs.phuongthao@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Vũ Phương Thảo', 'doctor', 1),
+(6, 'bs.quochuy@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Đặng Quốc Huy', 'doctor', 1),
+(7, 'bs.thuylinh@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Phạm Thùy Linh', 'doctor', 1),
+(8, 'bs.minhtuan@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Hoàng Minh Tuấn', 'doctor', 1),
+(9, 'bs.ngocmai@hieutam.vn', '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W', 'Nguyễn Ngọc Mai', 'doctor', 1);
 
 INSERT INTO specialties (id, name, code, description, icon_name, is_active) VALUES
 (1, 'Nội tổng quát', 'NOI-TQ', 'Khám, chẩn đoán và điều trị các bệnh lý nội khoa tổng quát, tim mạch, hô hấp, tiêu hóa...', 'STETHOSCOPE', 1),
@@ -269,17 +269,6 @@ INSERT INTO doctor_shifts (doctor_id, shift_date, start_time, end_time, slot_dur
 (7, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '08:00:00', '11:30:00', 30, 'active'),
 (8, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '08:00:00', '11:30:00', 30, 'active');
 
-UPDATE doctor_shifts shift
-JOIN doctor_weekly_schedules schedule
-    ON schedule.doctor_id = shift.doctor_id
-   AND schedule.weekday = WEEKDAY(shift.shift_date)
-   AND schedule.start_time = shift.start_time
-   AND schedule.end_time = shift.end_time
-   AND schedule.slot_duration = shift.slot_duration
-   AND schedule.is_demo = 1
-   AND shift.created_at >= schedule.created_at
-SET shift.is_demo = 1;
-
 INSERT INTO patients (id, full_name, phone, email, date_of_birth, gender, address) VALUES
 (1, 'Nguyễn Văn A', '0912345678', 'nguyenvana@example.com', '1992-05-14', 'Nam', 'TP. Trà Vinh');
 
@@ -291,13 +280,21 @@ INSERT INTO appointments (
 ) VALUES
 ('HT-20261029-001', 1, 1, 1, 1, CURDATE(), '08:00:00', '08:30:00', 'Nguyễn Văn A', '0912345678', 'nguyenvana@example.com', '1992-05-14', 'Nam', 'Khám tổng quát định kỳ và kiểm tra huyết áp.', 'confirmed', 'Bệnh nhân có tiền sử huyết áp cao nhẹ.');
 
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE doctor_shifts shift
+JOIN doctor_weekly_schedules schedule
+    ON schedule.doctor_id = shift.doctor_id
+   AND schedule.weekday = WEEKDAY(shift.shift_date)
+   AND schedule.start_time = shift.start_time
+   AND schedule.end_time = shift.end_time
+   AND schedule.slot_duration = shift.slot_duration
+   AND schedule.is_demo = 1
+   AND shift.created_at >= schedule.created_at
+SET shift.is_demo = 1;
+
 UPDATE appointments
 SET hold_expires_at = DATE_ADD(created_at, INTERVAL 60 MINUTE)
 WHERE status = 'pending' AND hold_expires_at IS NULL;
 
-
-
-USE hieu_tam_clinic;
-SET SQL_SAFE_UPDATES = 0;
-UPDATE users SET password_hash = '$2a$10$p4FLztT8rsgdDLQI7G03UOSnXCZuFqag1GzWVFOt6dOvX2m2Qy85W';
 SET SQL_SAFE_UPDATES = 1;
