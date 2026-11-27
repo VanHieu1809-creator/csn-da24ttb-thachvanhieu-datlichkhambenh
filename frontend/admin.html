@@ -230,7 +230,7 @@
           <div class="admin-appointments-heading">
             <div>
               <h2>Quản lý lịch trực</h2>
-              <p>Thêm, theo dõi và xóa các ca trực của bác sĩ.</p>
+              <p>Thêm, theo dõi, sửa và xóa các ca trực của bác sĩ.</p>
             </div>
           </div>
           <div class="admin-schedule-filters admin-schedule-list-filters">
@@ -270,7 +270,12 @@
                 <input id="adminScheduleCreateEnd" class="form-control" name="end_time" type="time" required>
               </label>
               <label for="adminScheduleCreateDuration">Thời lượng slot (phút)
-                <input id="adminScheduleCreateDuration" class="form-control" name="slot_duration" type="number" min="1" step="1" value="30" required>
+                <select id="adminScheduleCreateDuration" class="form-control" name="slot_duration" required>
+                  <option value="15">15 phút</option>
+                  <option value="30" selected>30 phút</option>
+                  <option value="45">45 phút</option>
+                  <option value="60">60 phút</option>
+                </select>
               </label>
             </div>
             <p id="adminScheduleCreateStatus" class="admin-doctor-form-error" role="status" aria-live="polite" hidden></p>
@@ -301,6 +306,41 @@
       </section>
     </main>
   </div>
+
+  <dialog id="adminShiftEditDialog" class="admin-shift-edit-dialog" aria-labelledby="adminShiftEditTitle">
+    <form id="adminShiftEditForm" class="admin-shift-edit-form">
+      <div class="admin-shift-edit-heading">
+        <h2 id="adminShiftEditTitle">Sửa ca trực</h2>
+      </div>
+      <div class="admin-shift-edit-fields">
+        <label for="adminShiftEditDoctor">Bác sĩ
+          <input id="adminShiftEditDoctor" class="form-control" type="text" readonly>
+        </label>
+        <label for="adminShiftEditDate">Ngày trực
+          <input id="adminShiftEditDate" class="form-control" name="shift_date" type="date" required>
+        </label>
+        <label for="adminShiftEditStart">Giờ bắt đầu
+          <input id="adminShiftEditStart" class="form-control" name="start_time" type="time" required>
+        </label>
+        <label for="adminShiftEditEnd">Giờ kết thúc
+          <input id="adminShiftEditEnd" class="form-control" name="end_time" type="time" required>
+        </label>
+        <label for="adminShiftEditDuration">Thời lượng slot
+          <select id="adminShiftEditDuration" class="form-control" name="slot_duration" required>
+            <option value="15">15 phút</option>
+            <option value="30">30 phút</option>
+            <option value="45">45 phút</option>
+            <option value="60">60 phút</option>
+          </select>
+        </label>
+      </div>
+      <p id="adminShiftEditError" class="admin-doctor-form-error" role="alert" aria-live="polite" hidden></p>
+      <div class="admin-doctor-form-actions">
+        <button type="button" class="btn btn-light-outline" id="adminShiftEditCancel">Hủy</button>
+        <button type="submit" class="btn btn-primary" id="adminShiftEditSubmit">Lưu thay đổi</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="js/api.js"></script>
   <script src="js/admin.js"></script>

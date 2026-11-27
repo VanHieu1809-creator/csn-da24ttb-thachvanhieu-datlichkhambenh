@@ -39,6 +39,16 @@ function escapeDoctorMarkup(value) {
   })[character]);
 }
 
+function preventOrphanWord(text) {
+  const value = String(text ?? '').trim();
+  const match = value.match(/^([\s\S]*\S)\s+(\S+)$/u);
+  if (!match) return value;
+
+  const precedingWords = match[1].trim().split(/\s+/u);
+  if (precedingWords.length < 3 || Array.from(match[2]).length > 10) return value;
+  return `${match[1]}\u00A0${match[2]}`;
+}
+
 function normalizeDoctorSearch(value) {
   return String(value ?? '')
     .normalize('NFD')
@@ -82,7 +92,7 @@ function renderDoctorCard(doctor) {
   const specialtyPresentation = SPECIALTY_PRESENTATION[doctor.specialty_id] || {};
   const specialty = escapeDoctorMarkup(specialtyPresentation.label || specialtyData?.name || doctor.specialty_name);
   const specialtyIcon = escapeDoctorMarkup(specialtyPresentation.icon || 'fa-stethoscope');
-  const description = escapeDoctorMarkup(doctor.bio);
+  const description = escapeDoctorMarkup(preventOrphanWord(doctor.bio));
   const room = escapeDoctorMarkup(doctor.room);
   const experience = escapeDoctorMarkup(doctor.experience_years);
   const avatar = escapeDoctorMarkup(doctor.avatar);
@@ -191,7 +201,7 @@ function renderSpecialtyCards() {
       <div class="specialty-card" style="align-items:center;">
         <div class="specialty-icon" style="margin-bottom:10px;"><i class="fa-solid ${escapeDoctorMarkup(presentation.icon || 'fa-stethoscope')}" aria-hidden="true"></i></div>
         <h3 class="specialty-name">${escapeDoctorMarkup(presentation.label || specialty.name)}</h3>
-        <p class="specialty-desc">${escapeDoctorMarkup(specialty.description || '')}</p>
+        <p class="specialty-desc">${escapeDoctorMarkup(preventOrphanWord(specialty.description || ''))}</p>
         <button type="button" class="specialty-action" data-home-doctor-specialty="${escapeDoctorMarkup(specialty.id)}">Xem bác sĩ <span aria-hidden="true">→</span></button>
       </div>
     `;
@@ -232,7 +242,7 @@ function showDoctorDetails(doctor) {
     <span class="doctor-avatar-label doctor-detail-avatar-label">Ảnh minh họa</span>
     <span class="doctor-spec-tag">${escapeDoctorMarkup(SPECIALTY_PRESENTATION[doctor.specialty_id]?.label || systemSpecialties.find(item => item.id === doctor.specialty_id)?.name || doctor.specialty_name)}</span>
     <h2 class="doctor-detail-name" id="doctorDetailName">${escapeDoctorMarkup(doctor.full_name)}</h2>
-    <p class="doctor-bio">${escapeDoctorMarkup(doctor.bio)}</p>
+    <p class="doctor-bio">${escapeDoctorMarkup(preventOrphanWord(doctor.bio))}</p>
     <div class="doctor-meta-list">
       <div class="doctor-meta-item"><i class="fa-regular fa-clock" aria-hidden="true"></i><span>${escapeDoctorMarkup(doctor.experience_years)} năm kinh nghiệm</span></div>
       <div class="doctor-meta-item"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>${escapeDoctorMarkup(doctor.room)}</span></div>

@@ -49,6 +49,7 @@ function adminDateToISO(date) {
 
 let adminScheduleDoctorsLoaded = false;
 let adminShiftRequestId = 0;
+const adminShiftsById = new Map();
 
 async function loadAdminScheduleDoctors() {
   const filter = document.getElementById('adminScheduleDoctorFilter');
@@ -106,18 +107,20 @@ async function loadAdminShifts() {
   });
   status.setAttribute('role', 'status');
   status.textContent = 'Đang tải ca trực...';
+  adminShiftsById.clear();
   tbody.innerHTML = '';
 
   try {
     const response = await apiRequest(`/admin/shifts?${params.toString()}`);
-    if (requestId !== adminShiftRequestId) return;
+    if (requestId !== adminShiftRequestId) return false;
     if (!Array.isArray(response.data)) throw new Error('Dữ liệu ca trực không hợp lệ.');
     const shifts = response.data;
     if (!shifts.length) {
       status.textContent = 'Không có ca trực trong khoảng ngày đã chọn.';
-      return;
+      return true;
     }
 
+    shifts.forEach(shift => adminShiftsById.set(String(shift.id), shift));
     tbody.innerHTML = shifts.map(shift => {
       const shiftDate = String(shift.shift_date || '').slice(0, 10);
       return `
@@ -128,16 +131,23 @@ async function loadAdminShifts() {
           <td>${escapeAdminMarkup(String(shift.start_time || '').slice(0, 5))} – ${escapeAdminMarkup(String(shift.end_time || '').slice(0, 5))}</td>
           <td>${escapeAdminMarkup(shift.slot_duration ?? '—')}</td>
           <td>${escapeAdminMarkup(shift.active_bookings ?? 0)}</td>
-          <td><button type="button" class="btn btn-light-outline admin-shift-delete" data-id="${escapeAdminMarkup(shift.id)}">Xóa ca</button></td>
+          <td>
+            <div class="admin-shift-actions">
+              <button type="button" class="btn btn-light-outline admin-shift-edit" data-id="${escapeAdminMarkup(shift.id)}">Sửa ca</button>
+              <button type="button" class="btn btn-light-outline admin-shift-delete" data-id="${escapeAdminMarkup(shift.id)}">Xóa ca</button>
+            </div>
+          </td>
         </tr>
       `;
     }).join('');
     status.textContent = `Có ${shifts.length} ca trực trong khoảng ngày đã chọn.`;
+    return true;
   } catch (error) {
-    if (requestId !== adminShiftRequestId) return;
+    if (requestId !== adminShiftRequestId) return false;
     status.setAttribute('role', 'alert');
     status.innerHTML = `${escapeAdminMarkup(error.message || 'Không thể tải danh sách ca trực.')} <button type="button" class="booking-retry" id="adminShiftsRetry">Thử lại</button>`;
     console.error('Không thể tải danh sách ca trực quản trị:', error.message);
+    return false;
   }
 }
 
@@ -176,6 +186,67 @@ async function createAdminShift(event) {
     message.setAttribute('role', 'alert');
     message.textContent = error.message || 'Không thể tạo ca trực.';
     message.hidden = false;
+  } finally {
+    submitButton.disabled = false;
+  }
+}
+
+function openAdminShiftEdit(shiftId) {
+  const shift = adminShiftsById.get(String(shiftId));
+  const status = document.getElementById('adminSchedulesStatus');
+  if (!shift) {
+    status.setAttribute('role', 'alert');
+    status.textContent = 'Ca trực không còn trong danh sách. Vui lòng tải lại.';
+    return;
+  }
+
+  const dialog = document.getElementById('adminShiftEditDialog');
+  const form = document.getElementById('adminShiftEditForm');
+  form.dataset.shiftId = String(shift.id);
+  document.getElementById('adminShiftEditDoctor').value = shift.doctor_display || '';
+  form.elements.shift_date.value = String(shift.shift_date || '').slice(0, 10);
+  form.elements.start_time.value = String(shift.start_time || '').slice(0, 5);
+  form.elements.end_time.value = String(shift.end_time || '').slice(0, 5);
+  form.elements.slot_duration.value = String(shift.slot_duration ?? '30');
+
+  const errorMessage = document.getElementById('adminShiftEditError');
+  errorMessage.hidden = true;
+  errorMessage.textContent = '';
+  document.getElementById('adminShiftEditSubmit').disabled = false;
+  dialog.showModal();
+  form.elements.shift_date.focus();
+}
+
+async function updateAdminShift(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const errorMessage = document.getElementById('adminShiftEditError');
+  const submitButton = document.getElementById('adminShiftEditSubmit');
+  errorMessage.hidden = true;
+  errorMessage.textContent = '';
+  submitButton.disabled = true;
+
+  try {
+    const formData = new FormData(form);
+    const response = await apiRequest(`/admin/shifts/${encodeURIComponent(form.dataset.shiftId)}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        shift_date: formData.get('shift_date'),
+        start_time: formData.get('start_time'),
+        end_time: formData.get('end_time'),
+        slot_duration: formData.get('slot_duration')
+      })
+    });
+
+    document.getElementById('adminShiftEditDialog').close();
+    if (await loadAdminShifts()) {
+      const status = document.getElementById('adminSchedulesStatus');
+      status.setAttribute('role', 'status');
+      status.textContent = response.message || 'Cập nhật ca trực thành công.';
+    }
+  } catch (error) {
+    errorMessage.textContent = error.message || 'Không thể cập nhật ca trực.';
+    errorMessage.hidden = false;
   } finally {
     submitButton.disabled = false;
   }
@@ -529,8 +600,17 @@ function initAdminDashboard() {
   document.getElementById('adminScheduleLoadButton')?.addEventListener('click', loadAdminShifts);
   document.getElementById('adminScheduleCreateForm')?.addEventListener('submit', createAdminShift);
   document.getElementById('adminSchedulesBody')?.addEventListener('click', event => {
-    const button = event.target.closest('.admin-shift-delete');
-    if (button) deleteAdminShift(button.dataset.id);
+    const editButton = event.target.closest('.admin-shift-edit');
+    if (editButton) {
+      openAdminShiftEdit(editButton.dataset.id);
+      return;
+    }
+    const deleteButton = event.target.closest('.admin-shift-delete');
+    if (deleteButton) deleteAdminShift(deleteButton.dataset.id);
+  });
+  document.getElementById('adminShiftEditForm')?.addEventListener('submit', updateAdminShift);
+  document.getElementById('adminShiftEditCancel')?.addEventListener('click', () => {
+    document.getElementById('adminShiftEditDialog').close();
   });
   document.getElementById('adminScheduleDoctorsStatus')?.addEventListener('click', event => {
     if (event.target.id === 'adminScheduleDoctorsRetry') loadAdminScheduleDoctors();

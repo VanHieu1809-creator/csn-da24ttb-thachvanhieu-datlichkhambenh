@@ -2439,6 +2439,84 @@ img {
 
 .admin-shift-delete {
   white-space: nowrap;
+  border-color: #e8caca;
+  color: #a94442;
+}
+
+.admin-shift-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.admin-shift-actions .btn {
+  min-height: 36px;
+  padding: 8px 11px;
+}
+
+.admin-shift-edit {
+  border-color: #c9e2d9;
+  color: var(--primary-dark);
+}
+
+.admin-shift-edit:hover {
+  border-color: var(--primary);
+  background: #edf8f4;
+  color: var(--primary-dark);
+}
+
+.admin-shift-delete:hover {
+  border-color: #d77878;
+  background: #fff5f5;
+  color: #b91c1c;
+}
+
+.admin-shift-edit-dialog {
+  width: min(520px, calc(100% - 32px));
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-shift-edit-dialog::backdrop {
+  background: rgba(11, 70, 57, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.admin-shift-edit-form {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.admin-shift-edit-heading h2 {
+  color: var(--primary-dark);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.admin-shift-edit-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-shift-edit-fields label {
+  display: grid;
+  gap: 6px;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-shift-edit-fields input[readonly] {
+  background: #f3f6f5;
+  color: var(--text-secondary);
 }
 
 .admin-schedules-table-wrap {
@@ -2856,6 +2934,14 @@ img {
 
   .booking-shift-tabs {
     grid-template-columns: 1fr;
+  }
+
+  .admin-shift-edit-form {
+    padding: 18px;
+  }
+
+  .admin-shift-edit-fields {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .time-slots-grid {
@@ -3363,7 +3449,7 @@ img {
 /* Full-bleed home hero */
 #view-home .hero-banner {
   position: relative !important;
-  min-height: 460px !important;
+  min-height: 440px !important;
   padding: 0 !important;
   overflow: hidden !important;
   background: #e8f7f2 !important;
@@ -3375,12 +3461,12 @@ img {
   display: flex !important;
   width: 100% !important;
   max-width: 1320px !important;
-  min-height: 460px !important;
+  min-height: 440px !important;
   align-items: center !important;
   justify-content: space-between;
   gap: 32px !important;
   margin: 0 auto;
-  padding: 32px 24px !important;
+  padding: 24px !important;
   box-sizing: border-box;
 }
 
@@ -3763,5 +3849,176 @@ img {
 
   #view-home .hero-doctor-img-wrap {
     margin: 12px -20px 0 !important;
+  }
+}
+
+@media (min-width: 992px) {
+  #view-home .hero-content .hero-highlights {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 14px;
+  }
+
+  #view-home .hero-content .highlight-item {
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+#view-home .home-benefits {
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+#view-home .home-benefit strong {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+#view-home .home-benefit small {
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+#view-home .lookup-layout {
+  align-items: stretch;
+}
+
+#view-home .lookup-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h1:not(.hero-title),
+h2:not(.hero-title),
+h3:not(.hero-title),
+h4:not(.hero-title),
+.section-title,
+.card-title {
+  text-wrap: balance;
+}
+
+p:not(.hero-desc),
+.doctor-bio,
+.specialty-desc,
+.footer-links a,
+.footer-list span,
+.about-purpose span {
+  text-wrap: pretty;
+}
+
+#view-home .hero-banner h1,
+#view-home .hero-banner h2,
+#view-home .hero-banner h3,
+#view-home .hero-banner h4,
+#view-home .hero-banner p {
+  text-wrap: initial;
+}
+
+#view-home .home-specialty-copy {
+  text-wrap: balance;
+}
+
+.doctor-card .doctor-card-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.doctor-card .doctor-bio {
+  min-height: 4.5em;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.doctor-card .doctor-meta-list {
+  margin-top: auto;
+}
+
+@media (min-width: 992px) {
+  button:not(#view-home .hero-banner button),
+  .btn:not(#view-home .hero-banner .btn),
+  .about-button,
+  .status-badge,
+  .footer-badge,
+  .footer-closed,
+  .doctor-avatar-label,
+  .doctor-spec-tag,
+  .main-nav .nav-link,
+  .main-nav .nav-btn-book,
+  .sidebar-menu li a,
+  .footer-links a,
+  th {
+    white-space: nowrap;
+  }
+
+  #view-home .home-benefits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  #view-home .home-benefit,
+  #view-home .home-benefit:first-child {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  #view-home .home-benefit strong {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  #view-home .home-benefit small {
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  #view-home .home-benefit > span:last-child {
+    width: 100%;
+  }
+}
+
+@media (max-width: 991px) {
+  button:not(#view-home .hero-banner button),
+  .btn:not(#view-home .hero-banner .btn),
+  .about-button,
+  .status-badge,
+  .footer-badge,
+  .footer-closed,
+  .doctor-avatar-label,
+  .doctor-spec-tag,
+  .main-nav .nav-link,
+  .main-nav .nav-btn-book,
+  .sidebar-menu li a,
+  .footer-links a,
+  th {
+    white-space: normal;
+  }
+
+  .home-specialty-intro .section-eyebrow {
+    white-space: normal;
+  }
+
+  .admin-shift-actions {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .admin-shift-delete,
+  .admin-appointment-action,
+  .admin-doctor-status-action {
+    white-space: normal;
   }
 }
